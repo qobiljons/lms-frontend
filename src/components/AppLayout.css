@@ -1,0 +1,14 @@
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+  transition: margin-left 0.3s ease;
+}
+
+.with-sidebar .app-content {
+  margin-left: 240px;
+}

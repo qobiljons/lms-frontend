@@ -1,0 +1,27 @@
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+.spinner-ring {
+  border: 3px solid rgba(0, 0, 0, 0.06);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.1);
+}
+
+.spinner-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="dark"] .spinner-ring {
+  border-color: rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent);
+}

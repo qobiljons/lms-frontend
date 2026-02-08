@@ -1,0 +1,293 @@
+.profile-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.profile-header {
+  margin-bottom: 2rem;
+}
+
+.profile-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.profile-header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.profile-section {
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 1.25rem;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1.25rem;
+}
+
+.profile-section .input-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.profile-section .input-row .input-group {
+  flex: 1;
+}
+
+.profile-section .input-group {
+  margin-bottom: 1.25rem;
+}
+
+.profile-section .input-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profile-section .input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.profile-section .input-wrapper svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.profile-section .input-wrapper:focus-within {
+  border-color: var(--accent);
+  background: rgba(22, 163, 74, 0.02);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08), 0 2px 8px rgba(22, 163, 74, 0.06);
+}
+
+.profile-section .input-wrapper:focus-within svg {
+  color: var(--accent);
+}
+
+.profile-section .input-wrapper input {
+  width: 100%;
+  padding: 0.7rem 0;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.925rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.profile-section .input-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+
+.textarea-wrapper {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.textarea-wrapper:focus-within {
+  border-color: var(--accent);
+  background: rgba(22, 163, 74, 0.02);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08), 0 2px 8px rgba(22, 163, 74, 0.06);
+}
+
+.textarea-wrapper textarea {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.925rem;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.textarea-wrapper textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.avatar-section {
+  margin-bottom: 1.25rem;
+}
+
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(22, 163, 74, 0.2);
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-preview span {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.avatar-btn {
+  display: inline-flex;
+  padding: 0.45rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.avatar-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(22, 163, 74, 0.04);
+}
+
+.btn-save {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #16a34a, #059669);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-save::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn-save:hover:not(:disabled)::before {
+  transform: translateX(100%);
+}
+
+.btn-save:hover:not(:disabled) {
+  box-shadow: 0 4px 20px rgba(22, 163, 74, 0.3), 0 2px 8px rgba(22, 163, 74, 0.15);
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-save-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.btn-save-warning:hover:not(:disabled) {
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3), 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .profile-section .input-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+[data-theme="dark"] .profile-section {
+  background: #161616;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .profile-section .input-wrapper {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .profile-section .input-wrapper:focus-within {
+  background: rgba(22, 163, 74, 0.06);
+}
+
+[data-theme="dark"] .textarea-wrapper {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .textarea-wrapper:focus-within {
+  background: rgba(22, 163, 74, 0.06);
+}
+
+[data-theme="dark"] .avatar-btn {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .avatar-btn:hover {
+  background: rgba(22, 163, 74, 0.08);
+}
