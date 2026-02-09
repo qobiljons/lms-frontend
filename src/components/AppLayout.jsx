@@ -4,7 +4,7 @@ import "./AppLayout.css";
 
 export default function AppLayout({ children }) {
   const { user } = useAuth();
-  const hasSidebar = user && (user.role === "admin" || user.role === "instructor");
+  const hasSidebar = !!user;
 
   return (
     <div className={`app-layout ${hasSidebar ? "with-sidebar" : ""}`}>

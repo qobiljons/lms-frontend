@@ -40,14 +40,32 @@ const instructorLinks = [
   },
 ];
 
+const studentLinks = [
+  {
+    to: "/dashboard",
+    label: "Dashboard",
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
+  },
+  {
+    to: "/profile",
+    label: "My Profile",
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  },
+];
+
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
 
-  if (!user || user.role === "student") return null;
+  if (!user) return null;
 
-  const links = user.role === "admin" ? adminLinks : instructorLinks;
+  const links =
+    user.role === "admin"
+      ? adminLinks
+      : user.role === "instructor"
+        ? instructorLinks
+        : studentLinks;
 
   return (
     <motion.aside

@@ -78,7 +78,7 @@ function App() {
               }
             />
             <Route
-              path="/admin/users/:id"
+              path="/admin/users/:username"
               element={
                 <RoleRoute roles={["admin"]}>
                   <UserDetailPage />

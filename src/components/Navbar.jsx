@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { getAvatarUrl, avatarErrorHandler } from "../utils/avatar";
 import Logo from "./Logo";
 import "./Navbar.css";
 
@@ -65,9 +66,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="user-avatar">
-                {user.first_name?.[0] || user.username[0]}
-              </div>
+              <img className="user-avatar" src={getAvatarUrl(user.profile)} alt={user.username} onError={avatarErrorHandler(user.profile)} />
               <div className="user-details">
                 <span className="user-name">{user.username}</span>
                 <span className="user-role">{user.role}</span>
