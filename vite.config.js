@@ -10,6 +10,14 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
+      '/courses': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/lessons': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
       '/media': {
         target: 'http://localhost:8000',
         changeOrigin: true,

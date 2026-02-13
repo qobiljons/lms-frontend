@@ -155,7 +155,6 @@ export default function UserDetailPage() {
   const avatarSrc = getAvatarUrl(user.profile);
 
   const fields = [
-    { label: "User ID", value: `#${user.id}` },
     { label: "Username", value: user.username },
     { label: "Email", value: user.email },
     { label: "First Name", value: user.first_name || "—" },

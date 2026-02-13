@@ -184,6 +184,8 @@
 
 .table-wrapper {
   overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .admin-table {
@@ -201,6 +203,9 @@
   color: var(--text-muted);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .sortable-th {

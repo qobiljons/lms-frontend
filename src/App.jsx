@@ -15,6 +15,8 @@ import UserListPage from "./pages/admin/UserListPage";
 import CreateUserPage from "./pages/admin/CreateUserPage";
 import UserDetailPage from "./pages/admin/UserDetailPage";
 import ProfilePage from "./pages/profile/ProfilePage";
+import CourseListPage from "./pages/courses/CourseListPage";
+import CourseDetailPage from "./pages/courses/CourseDetailPage";
 
 function App() {
   const location = useLocation();
@@ -57,6 +59,23 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/courses"
+              element={
+                <ProtectedRoute>
+                  <CourseListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/courses/:slug"
+              element={
+                <ProtectedRoute>
+                  <CourseDetailPage />
                 </ProtectedRoute>
               }
             />
