@@ -36,7 +36,6 @@ export default function CourseDetailPage() {
   const [confirmDeleteName, setConfirmDeleteName] = useState("");
 
   // Lessons state
-  const [activeTab, setActiveTab] = useState("lessons");
   const [lessons, setLessons] = useState([]);
   const [lessonsLoading, setLessonsLoading] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
@@ -109,8 +108,8 @@ export default function CourseDetailPage() {
   }, [course?.id, slug]);
 
   useEffect(() => {
-    if (activeTab === "lessons" && course?.id) fetchLessons();
-  }, [activeTab, course?.id, fetchLessons]);
+    if (course?.id) fetchLessons();
+  }, [course?.id, fetchLessons]);
 
   const handleFormChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -487,40 +486,22 @@ export default function CourseDetailPage() {
 
         {/* Lessons section */}
         <motion.div
-          className="user-tabs"
-          style={{ marginTop: "1.5rem" }}
+          className="lessons-section-header"
+          style={{ marginTop: "1.5rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.15 }}
         >
-          <button
-            className={`user-tab ${activeTab === "info" ? "active" : ""}`}
-            onClick={() => setActiveTab("info")}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            Overview
-            {activeTab === "info" && <motion.div className="user-tab-indicator" layoutId="courseDetailTab" />}
-          </button>
-          <button
-            className={`user-tab ${activeTab === "lessons" ? "active" : ""}`}
-            onClick={() => setActiveTab("lessons")}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Lessons
-            {activeTab === "lessons" && <motion.div className="user-tab-indicator" layoutId="courseDetailTab" />}
-          </button>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600, color: "var(--text-secondary)" }}>Lessons</h3>
+          <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginLeft: "0.25rem" }}>({lessons.length})</span>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          {activeTab === "lessons" && (
-            <motion.div
-              key="lessons"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-              style={{ marginTop: "1rem" }}
-            >
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+        >
               {isAdmin && (
                 <div style={{ marginBottom: "1rem" }}>
                   {showCreateLesson ? (
@@ -829,9 +810,7 @@ export default function CourseDetailPage() {
                   </AnimatePresence>
                 </div>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </motion.div>
       </div>
     </PageTransition>
   );

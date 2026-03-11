@@ -14,6 +14,8 @@ import DashboardPage from "./pages/dashboard/DashboardPage";
 import UserListPage from "./pages/admin/UserListPage";
 import CreateUserPage from "./pages/admin/CreateUserPage";
 import UserDetailPage from "./pages/admin/UserDetailPage";
+import AdminCoursesPage from "./pages/admin/AdminCoursesPage";
+import AdminLessonsPage from "./pages/admin/AdminLessonsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import CourseListPage from "./pages/courses/CourseListPage";
 import CourseDetailPage from "./pages/courses/CourseDetailPage";
@@ -80,6 +82,22 @@ function App() {
               }
             />
 
+            <Route
+              path="/admin/courses"
+              element={
+                <RoleRoute roles={["admin"]}>
+                  <AdminCoursesPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/lessons"
+              element={
+                <RoleRoute roles={["admin"]}>
+                  <AdminLessonsPage />
+                </RoleRoute>
+              }
+            />
             <Route
               path="/admin/users"
               element={

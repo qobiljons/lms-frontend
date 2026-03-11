@@ -1777,3 +1777,228 @@
     flex-wrap: wrap;
   }
 }
+
+/* ================================
+   Admin Table Actions
+   ================================ */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.action-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.action-btn-ghost:hover {
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--accent);
+}
+.action-btn-ghost-danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+}
+
+.action-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.action-btn-primary:hover { opacity: 0.9; }
+.action-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.action-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.action-btn-danger:hover { background: rgba(239, 68, 68, 0.18); }
+.action-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.action-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.action-btn-outline:hover {
+  background: var(--bg-secondary);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ================================
+   Inline Edit Form
+   ================================ */
+.editing-row td {
+  padding: 1rem !important;
+}
+
+.inline-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inline-edit-fields {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.inline-edit-fields .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inline-edit-fields .input-group label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.inline-edit-fields .input-group input,
+.inline-edit-fields .input-group textarea {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.inline-edit-fields .input-group input:focus,
+.inline-edit-fields .input-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08);
+}
+
+.inline-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* Logo upload for admin */
+.logo-upload-area-admin {
+  margin-top: 0.35rem;
+}
+
+.logo-upload-label-admin {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border: 2px dashed rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.logo-upload-label-admin:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(22, 163, 74, 0.03);
+}
+
+/* Textarea wrapper for create forms */
+.input-wrapper-textarea {
+  align-items: flex-start !important;
+}
+.input-wrapper-textarea textarea {
+  flex: 1;
+  min-height: 80px;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+  padding: 0.3rem 0;
+}
+
+/* ================================
+   Dark Mode - Admin Actions
+   ================================ */
+[data-theme="dark"] .action-btn-ghost:hover {
+  background: rgba(34, 197, 94, 0.12);
+}
+[data-theme="dark"] .action-btn-ghost-danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+[data-theme="dark"] .action-btn-outline {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .action-btn-outline:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .inline-edit-fields .input-group input,
+[data-theme="dark"] .inline-edit-fields .input-group textarea {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .logo-upload-label-admin {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .logo-upload-label-admin:hover {
+  border-color: var(--accent);
+  background: rgba(22, 163, 74, 0.06);
+}
+
+@media (max-width: 768px) {
+  .inline-edit-fields {
+    flex-direction: column;
+  }
+  .table-actions {
+    flex-wrap: wrap;
+  }
+}
