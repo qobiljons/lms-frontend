@@ -1,0 +1,547 @@
+.mygroups-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.mygroups-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.mygroups-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+
+.mygroups-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.mygroups-count-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+/* Loading */
+.mygroups-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+}
+
+.mygroups-loading p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.mygroups-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(22, 163, 74, 0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: mgSpin 0.7s linear infinite;
+}
+
+@keyframes mgSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.mygroups-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+}
+
+.mygroups-empty-icon {
+  display: inline-flex;
+  padding: 1.25rem;
+  border-radius: 50%;
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+}
+
+.mygroups-empty h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.mygroups-empty p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+/* Group Cards */
+.mygroups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mygroup-card {
+  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mygroup-card.expanded {
+  border-color: rgba(22, 163, 74, 0.2);
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.08);
+}
+
+.mygroup-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.mygroup-card-header:hover {
+  background: rgba(22, 163, 74, 0.02);
+}
+
+.mygroup-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mygroup-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(5, 150, 105, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.mygroup-info h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mygroup-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0.15rem 0 0;
+}
+
+.mygroup-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mygroup-member-count,
+.mygroup-course-count {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.mygroup-chevron {
+  color: var(--text-muted);
+}
+
+/* Expanded body */
+.mygroup-body {
+  overflow: hidden;
+}
+
+.mygroup-body-inner {
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mygroup-section {
+  margin-top: 1.25rem;
+}
+
+.mygroup-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mygroup-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.75rem;
+}
+
+.section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Search */
+.mygroup-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.mygroup-search:focus-within {
+  border-color: var(--accent);
+  background: rgba(22, 163, 74, 0.02);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08);
+}
+
+.mygroup-search svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.mygroup-search input {
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  width: 160px;
+}
+
+.mygroup-search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Member list */
+.mygroup-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mygroup-member {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.mygroup-member:hover {
+  background: rgba(22, 163, 74, 0.04);
+}
+
+.mygroup-member.instructor-member {
+  background: rgba(245, 158, 11, 0.04);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.mygroup-member.instructor-member:hover {
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.member-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-email {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-role-badge {
+  display: inline-flex;
+  padding: 0.15rem 0.55rem;
+  border-radius: 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.member-you-badge {
+  display: inline-flex;
+  padding: 0.15rem 0.55rem;
+  border-radius: 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  flex-shrink: 0;
+}
+
+.member-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.mygroup-member:hover .member-arrow {
+  transform: translateX(2px);
+  color: var(--accent);
+}
+
+.mygroup-no-students,
+.mygroup-no-results {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.75rem 0;
+  margin: 0;
+  text-align: center;
+}
+
+/* Courses list */
+.mygroup-courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mygroup-course {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.mygroup-course:hover {
+  background: rgba(22, 163, 74, 0.04);
+}
+
+.course-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(5, 150, 105, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.course-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.course-title {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.course-desc {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .mygroups-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .mygroups-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .mygroup-card-header {
+    padding: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .mygroup-body-inner {
+    padding: 0 1rem 1rem;
+  }
+
+  .mygroup-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .mygroup-search {
+    width: 100%;
+  }
+
+  .mygroup-search input {
+    width: 100%;
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .mygroups-empty {
+  background: #161616;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .mygroup-card {
+  background: #161616;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .mygroup-card.expanded {
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+[data-theme="dark"] .mygroup-card-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .mygroup-body-inner {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .mygroup-search {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .mygroup-search:focus-within {
+  background: rgba(22, 163, 74, 0.06);
+}
+
+[data-theme="dark"] .mygroup-member:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .mygroup-member.instructor-member {
+  background: rgba(245, 158, 11, 0.06);
+  border-color: rgba(245, 158, 11, 0.12);
+}
+
+[data-theme="dark"] .mygroup-member.instructor-member:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+[data-theme="dark"] .mygroup-course:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .mygroups-count-badge {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: rgba(22, 163, 74, 0.2);
+}

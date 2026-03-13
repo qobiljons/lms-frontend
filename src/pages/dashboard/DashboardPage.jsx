@@ -89,6 +89,7 @@ export default function DashboardPage() {
                 {[
                   { label: "Total Users", value: stats.users.total, icon: "👥", color: "#16a34a", bg: "rgba(22,163,74,0.08)" },
                   { label: "Active Users", value: stats.users.active, icon: "✅", color: "#22c55e", bg: "rgba(34,197,94,0.08)" },
+                  { label: "Groups", value: stats.groups?.total ?? 0, icon: "👨‍👩‍👧‍👦", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
                   { label: "Courses", value: stats.courses.total, icon: "📘", color: "#3b82f6", bg: "rgba(59,130,246,0.08)" },
                   { label: "Lessons", value: stats.lessons.total, icon: "📝", color: "#8b5cf6", bg: "rgba(139,92,246,0.08)" },
                 ].map((s, i) => (
@@ -169,8 +170,8 @@ export default function DashboardPage() {
           )}
 
           {user.role === "admin" && loadingStats && (
-            <motion.div className="dash-stats dash-stats-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              {[...Array(4)].map((_, i) => (
+            <motion.div className="admin-stats-grid" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              {[...Array(5)].map((_, i) => (
                 <div className="stat-card stat-skeleton" key={i}>
                   <div className="skeleton-row" style={{ width: "60%", height: 12 }} />
                   <div className="skeleton-row" style={{ width: "40%", height: 24, marginTop: 8 }} />

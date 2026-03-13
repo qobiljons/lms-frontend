@@ -272,6 +272,22 @@ export default function UserDetailPage() {
                       {user.is_active ? "Active" : "Inactive"}
                     </span>
                   </motion.div>
+                  {user.groups && user.groups.length > 0 && (
+                    <motion.div
+                      className="detail-field"
+                      style={{ gridColumn: "1 / -1" }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 + (fields.length + 2) * 0.04 }}
+                    >
+                      <span className="detail-label">Groups</span>
+                      <div className="group-chips">
+                        {user.groups.map((g) => (
+                          <span key={g.id} className="group-chip">{g.name}</span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </motion.div>
             )}

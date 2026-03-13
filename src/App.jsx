@@ -16,9 +16,12 @@ import CreateUserPage from "./pages/admin/CreateUserPage";
 import UserDetailPage from "./pages/admin/UserDetailPage";
 import AdminCoursesPage from "./pages/admin/AdminCoursesPage";
 import AdminLessonsPage from "./pages/admin/AdminLessonsPage";
+import AdminGroupsPage from "./pages/admin/AdminGroupsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import CourseListPage from "./pages/courses/CourseListPage";
 import CourseDetailPage from "./pages/courses/CourseDetailPage";
+import MyGroupsPage from "./pages/groups/MyGroupsPage";
+import MemberProfilePage from "./pages/groups/MemberProfilePage";
 
 function App() {
   const location = useLocation();
@@ -82,6 +85,31 @@ function App() {
               }
             />
 
+            <Route
+              path="/my-groups"
+              element={
+                <ProtectedRoute>
+                  <MyGroupsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/members/:username"
+              element={
+                <ProtectedRoute>
+                  <MemberProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/groups"
+              element={
+                <RoleRoute roles={["admin"]}>
+                  <AdminGroupsPage />
+                </RoleRoute>
+              }
+            />
             <Route
               path="/admin/courses"
               element={

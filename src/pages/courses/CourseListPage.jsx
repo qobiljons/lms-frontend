@@ -185,7 +185,7 @@ export default function CourseListPage() {
               ) : courses.length === 0 ? (
                 <div className="course-empty">
                   <h2>No courses found</h2>
-                  <p>{search ? "Try a different search term." : "No courses have been created yet."}</p>
+                  <p>{search ? "Try a different search term." : user?.role === "student" ? "You haven\u2019t been assigned to any group yet. Contact your instructor or admin to get access to courses." : "No courses have been created yet."}</p>
                 </div>
               ) : (
                 <div className="course-cards-grid">
