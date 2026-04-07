@@ -1,26 +1,53 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// Only proxy requests that look like API calls (XHR/fetch), not browser navigations.
+// Browser navigations send "text/html" in Accept header; API calls send "application/json".
+function bypassForHtml(req) {
+  if (
+    req.headers.accept &&
+    req.headers.accept.includes('text/html')
+  ) {
+    // Return false-y path to skip proxy and let Vite serve index.html (SPA fallback)
+    return '/index.html'
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  cacheDir: '/tmp/vite_cache',
   server: {
     proxy: {
       '/auth': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        bypass: bypassForHtml,
       },
       '/courses': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        bypass: bypassForHtml,
       },
       '/lessons': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        bypass: bypassForHtml,
       },
       '/groups': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        bypass: bypassForHtml,
+      },
+      '/payments': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        bypass: bypassForHtml,
+      },
+      '/attendance': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        bypass: bypassForHtml,
       },
       '/media': {
         target: 'http://localhost:8000',

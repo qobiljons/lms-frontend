@@ -319,7 +319,7 @@ export default function MyGroupsPage() {
                                 {group.courses_detail.map((course) => (
                                   <Link
                                     key={course.id}
-                                    to={`/courses/${course.slug}`}
+                                    to={`/courses/${course.slug || course.id}`}
                                     className="mygroup-course"
                                   >
                                     <div className="course-thumb">

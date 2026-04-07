@@ -1,0 +1,423 @@
+.payments-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.payments-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+
+.payments-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 2rem;
+}
+
+/* Tabs */
+.payments-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.payments-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.payments-tab:hover {
+  color: var(--text-primary);
+}
+
+.payments-tab.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.payments-tab-indicator {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border-radius: 9px;
+  z-index: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.payments-tab > * {
+  position: relative;
+  z-index: 1;
+}
+
+.payments-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+/* Section titles */
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+
+/* Course cards grid */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+}
+
+.course-pay-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+
+.course-pay-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.course-pay-logo {
+  height: 140px;
+  background: linear-gradient(135deg, #f0fdf4, #e0f2fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.course-pay-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-pay-logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.course-pay-logo-placeholder.free {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.course-pay-card.free .course-pay-logo {
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+}
+
+.course-pay-info {
+  padding: 1rem 1.25rem 0.5rem;
+  flex: 1;
+}
+
+.course-pay-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+}
+
+.course-pay-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.course-pay-footer {
+  padding: 0.75rem 1.25rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.course-pay-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.course-pay-price.free {
+  color: #3b82f6;
+  font-size: 1rem;
+}
+
+.course-free-badge {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.course-pay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.course-pay-btn:hover {
+  opacity: 0.9;
+}
+
+.course-pay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-loading-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: payments-spin 0.6s linear infinite;
+}
+
+/* Purchases list */
+.purchases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.purchase-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.purchase-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.purchase-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.purchase-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.purchase-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.purchase-amount {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* Payment history table */
+.payments-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.payments-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.payments-table thead th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.payments-table tbody td {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.payments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Empty / loading states */
+.payments-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.payments-empty-icon {
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+
+.payments-empty p {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.payments-loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.payments-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 0, 0, 0.08);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: payments-spin 0.7s linear infinite;
+}
+
+@keyframes payments-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Success banner */
+.payments-success {
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #16a34a;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Dark mode */
+[data-theme="dark"] .payments-tabs {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .payments-tab-indicator {
+  background: var(--bg-tertiary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .course-pay-card,
+[data-theme="dark"] .purchase-item,
+[data-theme="dark"] .payments-table-wrap {
+  background: var(--bg-secondary);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .course-pay-logo {
+  background: linear-gradient(135deg, rgba(22,163,74,0.08), rgba(59,130,246,0.08));
+}
+
+[data-theme="dark"] .course-pay-card.free .course-pay-logo {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(99,102,241,0.08));
+}
+
+[data-theme="dark"] .payments-table thead th {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .payments-table tbody td {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 600px) {
+  .payments-container {
+    padding: 1.5rem 1rem;
+  }
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+  .payments-tabs {
+    overflow-x: auto;
+  }
+}

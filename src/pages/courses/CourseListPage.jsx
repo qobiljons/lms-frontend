@@ -29,10 +29,22 @@ export default function CourseListPage() {
   const activeTab = isAdmin && searchParams.get("tab") === "create" ? "create" : "list";
   const setActiveTab = (tab) => setSearchParams(tab === "create" ? { tab: "create" } : {});
 
-  const [form, setForm] = useState({ title: "", description: "" });
+  const [form, setForm] = useState({ title: "", description: "", price: "" });
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const getApiErrorMessage = (err, fallback) => {
+    const detail = err?.response?.data?.detail;
+    if (typeof detail === "string" && detail.trim()) return detail;
+    return fallback;
+  };
+
+  const normalizeCourseList = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.results)) return payload.results;
+    return [];
+  };
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);
@@ -41,7 +53,7 @@ export default function CourseListPage() {
       params.set("page_size", 50);
       if (search) params.set("search", search);
       const { data } = await api.get(`/courses/?${params.toString()}`);
-      const courseList = data.results || data;
+      const courseList = normalizeCourseList(data);
       setCourses(courseList);
 
       const counts = {};
@@ -50,14 +62,20 @@ export default function CourseListPage() {
           try {
             const res = await api.get(`/lessons/?course=${course.id}&page_size=1`);
             counts[course.id] = res.data.count ?? (res.data.results || res.data || []).length;
-          } catch {
+          } catch (err) {
+            // Silently fail for lesson count - not critical
+            console.warn(`Failed to load lesson count for course ${course.id}:`, err);
             counts[course.id] = 0;
           }
         })
       );
       setLessonCounts(counts);
-    } catch {
-      toast.error("Failed to load courses.");
+    } catch (err) {
+      console.error("Failed to fetch courses:", err);
+      const errorMsg = getApiErrorMessage(err, "Failed to load courses.");
+      toast.error(errorMsg);
+      // Set empty array so UI shows appropriate message
+      setCourses([]);
     } finally {
       setLoading(false);
     }
@@ -92,12 +110,13 @@ export default function CourseListPage() {
       const formData = new FormData();
       formData.append("title", form.title);
       formData.append("description", form.description);
+      formData.append("price", form.price || "0");
       if (logoFile) formData.append("logo", logoFile);
       await api.post("/courses/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Course created successfully!");
-      setForm({ title: "", description: "" });
+      setForm({ title: "", description: "", price: "" });
       setLogoFile(null);
       setLogoPreview(null);
       setActiveTab("list");
@@ -118,6 +137,12 @@ export default function CourseListPage() {
   const formatDate = (iso) => {
     const d = new Date(iso);
     return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  };
+
+  const getCoursePath = (course) => {
+    if (course?.slug) return `/courses/${course.slug}`;
+    if (course?.id != null) return `/courses/${course.id}`;
+    return null;
   };
 
   // Color palette for cards without logos
@@ -185,7 +210,7 @@ export default function CourseListPage() {
               ) : courses.length === 0 ? (
                 <div className="course-empty">
                   <h2>No courses found</h2>
-                  <p>{search ? "Try a different search term." : user?.role === "student" ? "You haven\u2019t been assigned to any group yet. Contact your instructor or admin to get access to courses." : "No courses have been created yet."}</p>
+                  <p>{search ? "Try a different search term." : (isAdmin ? "No courses have been created yet." : "No courses assigned yet.")}</p>
                 </div>
               ) : (
                 <div className="course-cards-grid">
@@ -193,11 +218,18 @@ export default function CourseListPage() {
                     const count = lessonCounts[course.id] ?? 0;
                     const gradient = cardColors[ci % cardColors.length];
 
+                    const coursePath = getCoursePath(course);
                     return (
                       <motion.div
                         key={course.id}
                         className="course-card-v2"
-                        onClick={() => navigate(`/courses/${course.slug}`)}
+                        onClick={() => {
+                          if (!coursePath) {
+                            toast.error("This course is missing a valid identifier.");
+                            return;
+                          }
+                          navigate(coursePath);
+                        }}
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: ci * 0.07, duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -213,11 +245,46 @@ export default function CourseListPage() {
                               {bookIcon}
                             </div>
                           )}
-                          {/* Overlay badge */}
+                          {/* Overlay badges */}
                           <div className="course-card-v2-banner-badge">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>
                             {count} lesson{count !== 1 ? "s" : ""}
                           </div>
+                          {/* Price badge */}
+                          <div className="course-card-v2-price-badge" style={{
+                            position: "absolute", top: "0.5rem", right: "0.5rem",
+                            padding: "0.2rem 0.6rem", borderRadius: 8,
+                            fontSize: "0.75rem", fontWeight: 700,
+                            background: course.price > 0 ? "rgba(0,0,0,0.7)" : "rgba(22,163,74,0.85)",
+                            color: "#fff", backdropFilter: "blur(8px)",
+                          }}>
+                            {course.price > 0 ? `$${Number(course.price).toFixed(2)}` : "Free"}
+                          </div>
+                          {/* Access indicator for students */}
+                          {!isAdmin && course.is_accessible && course.price > 0 && (
+                            <div style={{
+                              position: "absolute", top: "0.5rem", left: "0.5rem",
+                              padding: "0.2rem 0.5rem", borderRadius: 8,
+                              fontSize: "0.7rem", fontWeight: 600,
+                              background: "rgba(22,163,74,0.85)", color: "#fff",
+                              display: "flex", alignItems: "center", gap: "0.25rem",
+                            }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                              {course.is_purchased ? "Owned" : "VIP"}
+                            </div>
+                          )}
+                          {!isAdmin && !course.is_accessible && course.price > 0 && (
+                            <div style={{
+                              position: "absolute", top: "0.5rem", left: "0.5rem",
+                              padding: "0.2rem 0.5rem", borderRadius: 8,
+                              fontSize: "0.7rem", fontWeight: 600,
+                              background: "rgba(0,0,0,0.6)", color: "#fff",
+                              display: "flex", alignItems: "center", gap: "0.25rem",
+                            }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                              Locked
+                            </div>
+                          )}
                         </div>
 
                         {/* Card Body */}
@@ -259,6 +326,14 @@ export default function CourseListPage() {
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="21" y1="14" x2="3" y2="14" /><line x1="17" y1="18" x2="3" y2="18" /></svg>
                       <input id="description" name="description" type="text" placeholder="Brief course description" value={form.description} onChange={handleFormChange} />
                     </div>
+                  </div>
+                  <div className="input-group">
+                    <label htmlFor="price">Price (USD)</label>
+                    <div className="input-wrapper">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                      <input id="price" name="price" type="number" step="0.01" min="0" placeholder="0.00 (free)" value={form.price} onChange={handleFormChange} />
+                    </div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>Leave at 0 or empty for a free course</span>
                   </div>
                   <div className="input-group">
                     <label htmlFor="logo">Logo</label>

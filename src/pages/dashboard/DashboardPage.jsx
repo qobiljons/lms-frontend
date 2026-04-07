@@ -19,8 +19,11 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [statsError, setStatsError] = useState(false);
+  const [attendanceData, setAttendanceData] = useState(null);
+  const [loadingAttendance, setLoadingAttendance] = useState(false);
 
   const fetchStats = () => {
+    if (user?.role !== "admin") return;
     setLoadingStats(true);
     setStatsError(false);
     api.get("/auth/dashboard/stats/")
@@ -29,9 +32,27 @@ export default function DashboardPage() {
       .finally(() => setLoadingStats(false));
   };
 
+  const fetchAttendance = async () => {
+    setLoadingAttendance(true);
+    try {
+      if (user?.role === "student") {
+        const { data } = await api.get("/attendance/my/");
+        setAttendanceData(data);
+      } else if (user?.role === "admin" || user?.role === "instructor") {
+        const { data } = await api.get("/attendance/overview/");
+        setAttendanceData(data);
+      }
+    } catch {
+      // Silent fail - attendance is optional
+    } finally {
+      setLoadingAttendance(false);
+    }
+  };
+
   useEffect(() => {
-    if (user.role === "admin") fetchStats();
-  }, []);
+    fetchStats();
+    fetchAttendance();
+  }, [user?.role]);
 
   const roleConfig = {
     admin: {
@@ -92,6 +113,9 @@ export default function DashboardPage() {
                   { label: "Groups", value: stats.groups?.total ?? 0, icon: "👨‍👩‍👧‍👦", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
                   { label: "Courses", value: stats.courses.total, icon: "📘", color: "#3b82f6", bg: "rgba(59,130,246,0.08)" },
                   { label: "Lessons", value: stats.lessons.total, icon: "📝", color: "#8b5cf6", bg: "rgba(139,92,246,0.08)" },
+                  { label: "Revenue", value: `$${parseFloat(stats.finance?.total_revenue || 0).toLocaleString()}`, icon: "💰", color: "#059669", bg: "rgba(5,150,105,0.08)" },
+                  { label: "Subscriptions", value: stats.finance?.active_subscriptions ?? 0, icon: "📋", color: "#dc2626", bg: "rgba(220,38,38,0.08)" },
+                  ...(attendanceData ? [{ label: "Attendance Rate", value: `${attendanceData.attendance_percentage ?? 0}%`, icon: "✓", color: "#0891b2", bg: "rgba(8,145,178,0.08)" }] : []),
                 ].map((s, i) => (
                   <motion.div
                     className="admin-stat"
@@ -107,7 +131,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="admin-stat-info">
                       <span className="admin-stat-value" style={{ color: s.color }}>
-                        {s.value.toLocaleString()}
+                        {typeof s.value === "number" ? s.value.toLocaleString() : s.value}
                       </span>
                       <span className="admin-stat-label">{s.label}</span>
                     </div>
@@ -166,6 +190,59 @@ export default function DashboardPage() {
                   </motion.div>
                 )}
               </motion.div>
+
+              {attendanceData && (
+                <motion.div
+                  className="breakdown-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <h3 className="breakdown-title">Attendance Overview</h3>
+                  <div className="attendance-dashboard-stats">
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Total Sessions</span>
+                      <span className="attendance-stat-value">{attendanceData.total_sessions ?? 0}</span>
+                    </div>
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Total Records</span>
+                      <span className="attendance-stat-value">{attendanceData.total_records ?? 0}</span>
+                    </div>
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Attendance Rate</span>
+                      <span className="attendance-stat-value" style={{ color: "#16a34a" }}>
+                        {attendanceData.attendance_percentage ?? 0}%
+                      </span>
+                    </div>
+                  </div>
+                  {attendanceData.status_breakdown && (
+                    <div style={{ marginTop: "1rem" }}>
+                      <div style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "0.5rem" }}>Status Breakdown</div>
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                        {Object.entries(attendanceData.status_breakdown).map(([status, count]) => (
+                          <div
+                            key={status}
+                            style={{
+                              padding: "0.4rem 0.8rem",
+                              borderRadius: "6px",
+                              background: "rgba(0,0,0,0.04)",
+                              fontSize: "0.8rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.4rem",
+                            }}
+                          >
+                            <span style={{ textTransform: "capitalize" }}>
+                              {status.replace("_", " ")}
+                            </span>
+                            <span style={{ fontWeight: "600" }}>{count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </>
           )}
 
@@ -248,6 +325,121 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </motion.div>
+
+              {user.role === "instructor" && attendanceData && (
+                <motion.div
+                  className="dash-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <div className="card-header">
+                    <h3>Your Groups Attendance</h3>
+                  </div>
+                  <div className="attendance-dashboard-stats">
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Total Sessions</span>
+                      <span className="attendance-stat-value">{attendanceData.total_sessions ?? 0}</span>
+                    </div>
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Total Records</span>
+                      <span className="attendance-stat-value">{attendanceData.total_records ?? 0}</span>
+                    </div>
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Attendance Rate</span>
+                      <span className="attendance-stat-value" style={{ color: "#16a34a" }}>
+                        {attendanceData.attendance_percentage ?? 0}%
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {user.role === "student" && attendanceData && (
+                <motion.div
+                  className="dash-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <div className="card-header">
+                    <h3>My Attendance</h3>
+                  </div>
+                  <div className="attendance-dashboard-stats">
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Total Records</span>
+                      <span className="attendance-stat-value">
+                        {attendanceData.summary?.total_records ?? 0}
+                      </span>
+                    </div>
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Present</span>
+                      <span className="attendance-stat-value">
+                        {attendanceData.summary?.present_records ?? 0}
+                      </span>
+                    </div>
+                    <div className="attendance-stat-item">
+                      <span className="attendance-stat-label">Attendance Rate</span>
+                      <span className="attendance-stat-value" style={{ color: "#16a34a" }}>
+                        {attendanceData.summary?.attendance_percentage ?? 0}%
+                      </span>
+                    </div>
+                  </div>
+                  {attendanceData.recent_records?.length > 0 && (
+                    <div style={{ marginTop: "1rem" }}>
+                      <div style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "0.5rem" }}>
+                        Recent Sessions
+                      </div>
+                      <div style={{ display: "grid", gap: "0.4rem" }}>
+                        {attendanceData.recent_records.slice(0, 5).map((record, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              padding: "0.5rem",
+                              background: "rgba(0,0,0,0.02)",
+                              borderRadius: "6px",
+                              fontSize: "0.8rem",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontWeight: "500" }}>{record.group}</div>
+                              <div style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+                                {record.session_date}
+                              </div>
+                            </div>
+                            <span
+                              style={{
+                                padding: "0.2rem 0.6rem",
+                                borderRadius: "4px",
+                                fontSize: "0.75rem",
+                                fontWeight: "600",
+                                textTransform: "capitalize",
+                                background:
+                                  record.status === "attended"
+                                    ? "rgba(22,163,74,0.1)"
+                                    : record.status === "absent"
+                                      ? "rgba(239,68,68,0.1)"
+                                      : "rgba(59,130,246,0.1)",
+                                color:
+                                  record.status === "attended"
+                                    ? "#16a34a"
+                                    : record.status === "absent"
+                                      ? "#ef4444"
+                                      : "#3b82f6",
+                              }}
+                            >
+                              {record.status.replace("_", " ")}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </>
           )}
         </motion.div>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api/axios";
 import { toast } from "react-toastify";
@@ -21,13 +21,18 @@ const lessonVariants = {
 export default function CourseDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const normalizedRole = (user?.role || "").toLowerCase();
+  const isAdmin = normalizedRole === "admin";
+  const isInstructor = normalizedRole === "instructor" || normalizedRole === "teacher";
+  const canEditCourse = isAdmin || isInstructor;
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "" });
+  const [form, setForm] = useState({ title: "", description: "", price: "0" });
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -59,15 +64,44 @@ export default function CourseDetailPage() {
   const [savingLesson, setSavingLesson] = useState(false);
   const [deletingLessonId, setDeletingLessonId] = useState(null);
   const [confirmDeleteLessonId, setConfirmDeleteLessonId] = useState(null);
+  const [accessError, setAccessError] = useState(null);
+
+  const getApiErrorMessage = (err, fallback) => {
+    const detail = err?.response?.data?.detail;
+    if (typeof detail === "string" && detail.trim()) return detail;
+    return fallback;
+  };
+
+  const isPurchaseRequiredError = (err) => {
+    if (err?.response?.status !== 403) return false;
+    const detail = err?.response?.data?.detail;
+    if (typeof detail !== "string") return false;
+    return detail.toLowerCase().includes("purchase");
+  };
+
+  const isNotAssignedError = (err) => {
+    if (err?.response?.status !== 403) return false;
+    const detail = err?.response?.data?.detail;
+    if (typeof detail !== "string") return false;
+    return detail.toLowerCase().includes("not assigned");
+  };
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
+        setAccessError(null);
         const { data } = await api.get(`/courses/${slug}/`);
         setCourse(data);
-        setForm({ title: data.title, description: data.description || "" });
-      } catch {
-        toast.error("Failed to load course.");
+        setForm({ title: data.title, description: data.description || "", price: data.price || "0" });
+      } catch (err) {
+        const message = getApiErrorMessage(err, "Failed to load course.");
+        setAccessError({
+          message,
+          status: err?.response?.status ?? null,
+          purchaseRequired: isPurchaseRequiredError(err),
+          notAssigned: isNotAssignedError(err),
+        });
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -94,22 +128,62 @@ export default function CourseDetailPage() {
         const lessonCourse = typeof lesson.course === "object" ? lesson.course?.id : lesson.course;
         return lessonCourse === course.id;
       });
-      if (filtered.length === 0) {
-        const { data } = await api.get(`/courses/${slug}/lessons/`);
-        setLessons(data.results || data);
-      } else {
-        setLessons(filtered);
+      setLessons(filtered);
+    } catch (err) {
+      const message = getApiErrorMessage(err, "Failed to load lessons.");
+      if (err?.response?.status === 403) {
+        setAccessError({
+          message,
+          status: 403,
+          purchaseRequired: isPurchaseRequiredError(err),
+          notAssigned: isNotAssignedError(err),
+        });
       }
-    } catch {
-      toast.error("Failed to load lessons.");
+      toast.error(message);
     } finally {
       setLessonsLoading(false);
     }
-  }, [course?.id, slug]);
+  }, [course?.id]);
 
+  const canAccessCourse = isAdmin || course?.is_accessible;
   useEffect(() => {
-    if (course?.id) fetchLessons();
-  }, [course?.id, fetchLessons]);
+    if (course?.id && canAccessCourse) fetchLessons();
+  }, [course?.id, canAccessCourse, fetchLessons]);
+
+  // Check for purchase success redirect
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    const success = searchParams.get("purchase_success");
+    if (success === "true" && sessionId) {
+      api.get(`/payments/course-checkout/success/?session_id=${sessionId}`)
+        .then(() => {
+          toast.success("Course purchased successfully!");
+          // Reload course to get updated is_accessible
+          api.get(`/courses/${slug}/`).then(({ data }) => setCourse(data));
+        })
+        .catch(() => toast.error("Could not verify purchase. Please refresh."));
+    }
+  }, []);
+
+  const handlePurchase = async () => {
+    if (!course) return;
+    setPurchasing(true);
+    try {
+      const { data } = await api.post("/payments/course-checkout/", { course_id: course.id });
+      if (data.demo) {
+        toast.success("Course purchased successfully!");
+        const { data: updated } = await api.get(`/courses/${slug}/`);
+        setCourse(updated);
+        fetchLessons();
+      } else if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to purchase course.");
+    } finally {
+      setPurchasing(false);
+    }
+  };
 
   const handleFormChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -129,6 +203,7 @@ export default function CourseDetailPage() {
       const formData = new FormData();
       formData.append("title", form.title);
       formData.append("description", form.description);
+      formData.append("price", form.price || "0");
       if (logoFile) formData.append("logo", logoFile);
       const { data } = await api.patch(`/courses/${slug}/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -286,6 +361,39 @@ export default function CourseDetailPage() {
   }
 
   if (!course) {
+    if (accessError?.status === 403) {
+      return (
+        <PageTransition>
+          <div className="courses-container">
+            <div className="course-empty">
+              <h2>Access Restricted</h2>
+              <p>{accessError.message}</p>
+              <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginTop: "1rem", flexWrap: "wrap" }}>
+                {accessError.notAssigned && (
+                  <motion.button
+                    className="course-btn course-btn-edit"
+                    onClick={() => navigate("/my-groups")}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Back to My Groups
+                  </motion.button>
+                )}
+                {accessError.purchaseRequired && (
+                  <motion.button
+                    className="course-btn course-btn-save"
+                    onClick={() => navigate("/payments")}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Go to Payments
+                  </motion.button>
+                )}
+                <Link to="/courses" className="back-link">← Back to Courses</Link>
+              </div>
+            </div>
+          </div>
+        </PageTransition>
+      );
+    }
     return (
       <PageTransition>
         <div className="courses-container">
@@ -351,6 +459,21 @@ export default function CourseDetailPage() {
                     rows={5}
                   />
                 </div>
+                {isAdmin && (
+                  <div className="input-group">
+                    <label htmlFor="edit-price">Price (USD)</label>
+                    <input
+                      id="edit-price"
+                      name="price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={form.price}
+                      onChange={handleFormChange}
+                      placeholder="0.00 (free)"
+                    />
+                  </div>
+                )}
                 <div className="input-group">
                   <label htmlFor="edit-logo">Logo</label>
                   <div className="logo-upload-area">
@@ -384,7 +507,7 @@ export default function CourseDetailPage() {
                     className="course-btn course-btn-cancel"
                     onClick={() => {
                       setEditing(false);
-                      setForm({ title: course.title, description: course.description || "" });
+                      setForm({ title: course.title, description: course.description || "", price: course.price || "0" });
                       setLogoFile(null);
                       setLogoPreview(null);
                     }}
@@ -414,7 +537,31 @@ export default function CourseDetailPage() {
                   <p>{course.description || "No description provided."}</p>
                 </div>
 
-                {isAdmin && (
+                {/* Price display */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", margin: "1rem 0" }}>
+                  <span style={{
+                    display: "inline-block", padding: "0.3rem 0.75rem", borderRadius: 8,
+                    fontSize: "0.9rem", fontWeight: 700,
+                    background: course.price > 0 ? "rgba(245,158,11,0.12)" : "rgba(22,163,74,0.12)",
+                    color: course.price > 0 ? "#f59e0b" : "#16a34a",
+                    border: `1px solid ${course.price > 0 ? "rgba(245,158,11,0.2)" : "rgba(22,163,74,0.2)"}`,
+                  }}>
+                    {course.price > 0 ? `$${Number(course.price).toFixed(2)}` : "Free"}
+                  </span>
+                  {!isAdmin && course.is_accessible && course.price > 0 && (
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", gap: "0.3rem",
+                      padding: "0.3rem 0.6rem", borderRadius: 8, fontSize: "0.8rem", fontWeight: 600,
+                      background: "rgba(22,163,74,0.12)", color: "#16a34a",
+                      border: "1px solid rgba(22,163,74,0.2)",
+                    }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      {course.is_purchased ? "Purchased" : "VIP Access"}
+                    </span>
+                  )}
+                </div>
+
+                {canEditCourse && (
                   <div className="course-actions">
                     <motion.button
                       className="course-btn course-btn-edit"
@@ -425,58 +572,60 @@ export default function CourseDetailPage() {
                       Edit
                     </motion.button>
 
-                    <AnimatePresence mode="wait">
-                      {confirmDelete ? (
-                        <motion.div
-                          key="confirm"
-                          className="course-confirm-row"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >
-                          <span className="course-confirm-text">Type the course name to confirm.</span>
-                          <input
-                            className="course-confirm-input"
-                            type="text"
-                            value={confirmDeleteName}
-                            onChange={(e) => setConfirmDeleteName(e.target.value)}
-                            placeholder={course.title}
-                            aria-label="Confirm course name"
-                          />
-                          <motion.button
-                            className="course-btn course-btn-delete"
-                            onClick={handleDelete}
-                            disabled={deleting || confirmDeleteName !== course.title}
-                            whileTap={{ scale: 0.95 }}
+                    {isAdmin && (
+                      <AnimatePresence mode="wait">
+                        {confirmDelete ? (
+                          <motion.div
+                            key="confirm"
+                            className="course-confirm-row"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                           >
-                            {deleting ? "Deleting..." : "Yes, Delete"}
-                          </motion.button>
+                            <span className="course-confirm-text">Type the course name to confirm.</span>
+                            <input
+                              className="course-confirm-input"
+                              type="text"
+                              value={confirmDeleteName}
+                              onChange={(e) => setConfirmDeleteName(e.target.value)}
+                              placeholder={course.title}
+                              aria-label="Confirm course name"
+                            />
+                            <motion.button
+                              className="course-btn course-btn-delete"
+                              onClick={handleDelete}
+                              disabled={deleting || confirmDeleteName !== course.title}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {deleting ? "Deleting..." : "Yes, Delete"}
+                            </motion.button>
+                            <motion.button
+                              className="course-btn course-btn-cancel"
+                              onClick={() => {
+                                setConfirmDelete(false);
+                                setConfirmDeleteName("");
+                              }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              No
+                            </motion.button>
+                          </motion.div>
+                        ) : (
                           <motion.button
-                            className="course-btn course-btn-cancel"
+                            key="delete"
+                            className="course-btn course-btn-delete"
                             onClick={() => {
-                              setConfirmDelete(false);
+                              setConfirmDelete(true);
                               setConfirmDeleteName("");
                             }}
                             whileTap={{ scale: 0.95 }}
                           >
-                            No
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Delete
                           </motion.button>
-                        </motion.div>
-                      ) : (
-                        <motion.button
-                          key="delete"
-                          className="course-btn course-btn-delete"
-                          onClick={() => {
-                            setConfirmDelete(true);
-                            setConfirmDeleteName("");
-                          }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                          Delete
-                        </motion.button>
-                      )}
-                    </AnimatePresence>
+                        )}
+                      </AnimatePresence>
+                    )}
                   </div>
                 )}
               </motion.div>
@@ -484,7 +633,47 @@ export default function CourseDetailPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Lessons section */}
+        {/* Purchase CTA for locked courses */}
+        {!isAdmin && !course.is_accessible && course.price > 0 && (
+          <motion.div
+            className="course-detail-card glass glow-border"
+            style={{ marginTop: "1.5rem", textAlign: "center", padding: "2rem" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem", opacity: 0.5 }}>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+             <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.1rem" }}>Unlock This Course</h3>
+             <p style={{ color: "var(--text-muted)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
+               {accessError?.message || "Purchase this course to access all lessons and content."}
+             </p>
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <motion.button
+                className="course-btn course-btn-save"
+                onClick={handlePurchase}
+                disabled={purchasing}
+                whileTap={{ scale: 0.95 }}
+                style={{ padding: "0.6rem 1.5rem", fontSize: "0.95rem" }}
+              >
+                {purchasing ? "Processing..." : `Buy for $${Number(course.price).toFixed(2)}`}
+              </motion.button>
+              <motion.button
+                className="course-btn course-btn-edit"
+                onClick={() => navigate("/billing")}
+                whileTap={{ scale: 0.95 }}
+                style={{ padding: "0.6rem 1.5rem", fontSize: "0.95rem" }}
+              >
+                Subscribe to VIP
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Lessons section — only show if accessible or admin */}
+        {(isAdmin || course.is_accessible) && (<>
         <motion.div
           className="lessons-section-header"
           style={{ marginTop: "1.5rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}
@@ -678,7 +867,7 @@ export default function CourseDetailPage() {
                             <h2 className="course-detail-title">{selectedLesson.title}</h2>
                             <p className="course-detail-date">Created {formatDate(selectedLesson.created_at)}</p>
                           </div>
-                          {isAdmin && (
+                          {canEditCourse && (
                             <div style={{ display: "flex", gap: "0.5rem" }}>
                               <motion.button
                                 className="course-btn course-btn-edit"
@@ -688,24 +877,26 @@ export default function CourseDetailPage() {
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                                 Edit
                               </motion.button>
-                              <AnimatePresence mode="wait">
-                                {confirmDeleteLessonId === selectedLesson.id ? (
-                                  <motion.div key="confirm" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    <span style={{ fontSize: "0.875rem" }}>Delete?</span>
-                                    <motion.button className="course-btn course-btn-delete" onClick={() => handleDeleteLesson(selectedLesson.id)} disabled={deletingLessonId === selectedLesson.id} whileTap={{ scale: 0.95 }}>
-                                      {deletingLessonId === selectedLesson.id ? "..." : "Yes"}
+                              {isAdmin && (
+                                <AnimatePresence mode="wait">
+                                  {confirmDeleteLessonId === selectedLesson.id ? (
+                                    <motion.div key="confirm" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                      <span style={{ fontSize: "0.875rem" }}>Delete?</span>
+                                      <motion.button className="course-btn course-btn-delete" onClick={() => handleDeleteLesson(selectedLesson.id)} disabled={deletingLessonId === selectedLesson.id} whileTap={{ scale: 0.95 }}>
+                                        {deletingLessonId === selectedLesson.id ? "..." : "Yes"}
+                                      </motion.button>
+                                      <motion.button className="course-btn course-btn-cancel" onClick={() => setConfirmDeleteLessonId(null)} whileTap={{ scale: 0.95 }}>
+                                        No
+                                      </motion.button>
+                                    </motion.div>
+                                  ) : (
+                                    <motion.button key="del" className="course-btn course-btn-delete" onClick={() => setConfirmDeleteLessonId(selectedLesson.id)} whileTap={{ scale: 0.95 }}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                      Delete
                                     </motion.button>
-                                    <motion.button className="course-btn course-btn-cancel" onClick={() => setConfirmDeleteLessonId(null)} whileTap={{ scale: 0.95 }}>
-                                      No
-                                    </motion.button>
-                                  </motion.div>
-                                ) : (
-                                  <motion.button key="del" className="course-btn course-btn-delete" onClick={() => setConfirmDeleteLessonId(selectedLesson.id)} whileTap={{ scale: 0.95 }}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    Delete
-                                  </motion.button>
-                                )}
-                              </AnimatePresence>
+                                  )}
+                                </AnimatePresence>
+                              )}
                             </div>
                           )}
                         </div>
@@ -811,6 +1002,7 @@ export default function CourseDetailPage() {
                 </div>
               )}
         </motion.div>
+        </>)}
       </div>
     </PageTransition>
   );

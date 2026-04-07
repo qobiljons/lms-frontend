@@ -22,6 +22,11 @@ import CourseListPage from "./pages/courses/CourseListPage";
 import CourseDetailPage from "./pages/courses/CourseDetailPage";
 import MyGroupsPage from "./pages/groups/MyGroupsPage";
 import MemberProfilePage from "./pages/groups/MemberProfilePage";
+import AdminFinancePage from "./pages/admin/AdminFinancePage";
+import BillingPage from "./pages/billing/BillingPage";
+import PaymentsPage from "./pages/payments/PaymentsPage";
+import AttendanceManagePage from "./pages/attendance/AttendanceManagePage";
+import AttendanceMyPage from "./pages/attendance/AttendanceMyPage";
 
 function App() {
   const location = useLocation();
@@ -103,6 +108,47 @@ function App() {
             />
 
             <Route
+              path="/payments"
+              element={
+                <ProtectedRoute>
+                  <PaymentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/billing"
+              element={
+                <ProtectedRoute>
+                  <BillingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/attendance/my"
+              element={
+                <RoleRoute roles={["student"]}>
+                  <AttendanceMyPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/attendance"
+              element={
+                <RoleRoute roles={["admin", "instructor", "teacher"]}>
+                  <AttendanceManagePage />
+                </RoleRoute>
+              }
+            />
+
+            <Route
+              path="/admin/finance"
+              element={
+                <RoleRoute roles={["admin"]}>
+                  <AdminFinancePage />
+                </RoleRoute>
+              }
+            />
+            <Route
               path="/admin/groups"
               element={
                 <RoleRoute roles={["admin"]}>
@@ -113,7 +159,7 @@ function App() {
             <Route
               path="/admin/courses"
               element={
-                <RoleRoute roles={["admin"]}>
+                <RoleRoute roles={["admin", "instructor", "teacher"]}>
                   <AdminCoursesPage />
                 </RoleRoute>
               }
@@ -121,7 +167,7 @@ function App() {
             <Route
               path="/admin/lessons"
               element={
-                <RoleRoute roles={["admin"]}>
+                <RoleRoute roles={["admin", "instructor", "teacher"]}>
                   <AdminLessonsPage />
                 </RoleRoute>
               }
