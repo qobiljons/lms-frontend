@@ -1778,9 +1778,7 @@
   }
 }
 
-/* ================================
-   Admin Table Actions
-   ================================ */
+
 .table-actions {
   display: flex;
   align-items: center;
@@ -1866,9 +1864,7 @@
   border-color: rgba(0, 0, 0, 0.2);
 }
 
-/* ================================
-   Inline Edit Form
-   ================================ */
+
 .editing-row td {
   padding: 1rem !important;
 }
@@ -1925,7 +1921,7 @@
   margin-top: 0.25rem;
 }
 
-/* Logo upload for admin */
+
 .logo-upload-area-admin {
   margin-top: 0.35rem;
 }
@@ -1948,7 +1944,7 @@
   background: rgba(22, 163, 74, 0.03);
 }
 
-/* Textarea wrapper for create forms */
+
 .input-wrapper-textarea {
   align-items: flex-start !important;
 }
@@ -1965,9 +1961,7 @@
   padding: 0.3rem 0;
 }
 
-/* ================================
-   Dark Mode - Admin Actions
-   ================================ */
+
 [data-theme="dark"] .action-btn-ghost:hover {
   background: rgba(34, 197, 94, 0.12);
 }
@@ -2003,9 +1997,7 @@
   }
 }
 
-/* ================================
-   Multi-Select Checkbox List
-   ================================ */
+
 .multi-select-container {
   max-height: 180px;
   overflow-y: auto;
@@ -2062,9 +2054,7 @@
   background: rgba(22, 163, 74, 0.1);
 }
 
-/* ================================
-   Group Chips (UserDetailPage)
-   ================================ */
+
 .group-chips {
   display: flex;
   flex-wrap: wrap;
@@ -2089,9 +2079,7 @@
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* ================================
-   Searchable Multi-Select (SMS)
-   ================================ */
+
 .sms-wrapper {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -2099,7 +2087,7 @@
   overflow: hidden;
 }
 
-/* Selected chips area */
+
 .sms-chips {
   display: flex;
   flex-wrap: wrap;
@@ -2160,7 +2148,7 @@
   color: #ef4444;
 }
 
-/* Search bar */
+
 .sms-search {
   display: flex;
   align-items: center;
@@ -2221,7 +2209,7 @@
   background: rgba(22, 163, 74, 0.08);
 }
 
-/* Options list */
+
 .sms-options {
   max-height: 200px;
   overflow-y: auto;
@@ -2291,7 +2279,7 @@
   color: var(--text-muted);
 }
 
-/* Dark mode */
+
 [data-theme="dark"] .sms-wrapper {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
@@ -2346,7 +2334,7 @@
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Scrollbar styling for SMS */
+
 .sms-options::-webkit-scrollbar,
 .sms-chips::-webkit-scrollbar {
   width: 5px;

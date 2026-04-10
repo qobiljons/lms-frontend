@@ -2,12 +2,48 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
+import { useUnreadMessages } from "../context/UnreadMessagesContext";
 import "./Sidebar.css";
 
 const coursesLink = {
   to: "/courses",
   label: "Courses",
   icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>,
+};
+
+const groupsLink = {
+  to: "/my-groups",
+  label: "My Groups",
+  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-4-4h-4"/><circle cx="17" cy="7" r="3"/></svg>,
+};
+
+const messagesLink = {
+  to: "/messages",
+  label: "Messages",
+  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+};
+
+const attendanceLink = {
+  to: "/attendance",
+  label: "Attendance",
+  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>,
+};
+
+const studentAttendanceLink = {
+  ...attendanceLink,
+  to: "/attendance/my",
+};
+
+const billingLink = {
+  to: "/billing",
+  label: "Billing",
+  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
+};
+
+const paymentsLink = {
+  to: "/payments",
+  label: "Payments",
+  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
 };
 
 const adminLinks = [
@@ -32,6 +68,7 @@ const adminLinks = [
     label: "Manage Groups",
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-4-4h-4"/><circle cx="17" cy="7" r="3"/></svg>,
   },
+  messagesLink,
   {
     to: "/admin/users",
     label: "Manage Users",
@@ -48,23 +85,6 @@ const adminLinks = [
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
   },
 ];
-
-const groupsLink = {
-  to: "/my-groups",
-  label: "My Groups",
-  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-4-4h-4"/><circle cx="17" cy="7" r="3"/></svg>,
-};
-
-const attendanceLink = {
-  to: "/attendance",
-  label: "Attendance",
-  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>,
-};
-
-const studentAttendanceLink = {
-  ...attendanceLink,
-  to: "/attendance/my",
-};
 
 const instructorLinks = [
   {
@@ -84,24 +104,13 @@ const instructorLinks = [
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
   },
   groupsLink,
+  messagesLink,
   {
     to: "/profile",
     label: "My Profile",
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
   },
 ];
-
-const billingLink = {
-  to: "/billing",
-  label: "Billing",
-  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
-};
-
-const paymentsLink = {
-  to: "/payments",
-  label: "Payments",
-  icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-};
 
 const studentLinks = [
   {
@@ -111,6 +120,7 @@ const studentLinks = [
   },
   coursesLink,
   groupsLink,
+  messagesLink,
   paymentsLink,
   {
     to: "/profile",
@@ -122,6 +132,7 @@ const studentLinks = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { user } = useAuth();
+  const { unreadCount } = useUnreadMessages();
   const location = useLocation();
 
   if (!user) return null;
@@ -181,6 +192,9 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         {links.map((link) => {
           const active = location.pathname === link.to || (link.to !== "/dashboard" && link.to !== "/profile" && location.pathname.startsWith(link.to));
+          const isMessagesLink = link.to === "/messages";
+          const showBadge = isMessagesLink && unreadCount > 0;
+
           return (
             <Link
               key={link.to}
@@ -188,7 +202,12 @@ export default function Sidebar() {
               className={`sidebar-link ${active ? "active" : ""}`}
               title={collapsed ? link.label : undefined}
             >
-              <span className="sidebar-icon">{link.icon}</span>
+              <span className="sidebar-icon">
+                {link.icon}
+                {showBadge && (
+                  <span className="sidebar-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>
+                )}
+              </span>
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
@@ -199,6 +218,11 @@ export default function Sidebar() {
                     transition={{ duration: 0.15 }}
                   >
                     {link.label}
+                    {showBadge && (
+                      <span className="sidebar-badge-text">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                      </span>
+                    )}
                   </motion.span>
                 )}
               </AnimatePresence>

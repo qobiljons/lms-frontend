@@ -20,6 +20,8 @@ import AdminGroupsPage from "./pages/admin/AdminGroupsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import CourseListPage from "./pages/courses/CourseListPage";
 import CourseDetailPage from "./pages/courses/CourseDetailPage";
+import CourseLessonsPage from "./pages/lessons/CourseLessonsPage";
+import LessonDetailPage from "./pages/lessons/LessonDetailPage";
 import MyGroupsPage from "./pages/groups/MyGroupsPage";
 import MemberProfilePage from "./pages/groups/MemberProfilePage";
 import AdminFinancePage from "./pages/admin/AdminFinancePage";
@@ -27,6 +29,7 @@ import BillingPage from "./pages/billing/BillingPage";
 import PaymentsPage from "./pages/payments/PaymentsPage";
 import AttendanceManagePage from "./pages/attendance/AttendanceManagePage";
 import AttendanceMyPage from "./pages/attendance/AttendanceMyPage";
+import MessagingPage from "./pages/messaging/MessagingPage";
 
 function App() {
   const location = useLocation();
@@ -89,6 +92,22 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/courses/:slug/lessons"
+              element={
+                <ProtectedRoute>
+                  <CourseLessonsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/lessons/:lessonId"
+              element={
+                <ProtectedRoute>
+                  <LessonDetailPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/my-groups"
@@ -137,6 +156,14 @@ function App() {
                 <RoleRoute roles={["admin", "instructor", "teacher"]}>
                   <AttendanceManagePage />
                 </RoleRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <MessagingPage />
+                </ProtectedRoute>
               }
             />
 

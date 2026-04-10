@@ -38,7 +38,6 @@ export default function BillingPage() {
   const [subscribing, setSubscribing] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Check for success redirect from Stripe
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
     const success = searchParams.get("success");
@@ -73,9 +72,7 @@ export default function BillingPage() {
       if (paymentsRes.status === "fulfilled") {
         setPayments(paymentsRes.value.data.results || paymentsRes.value.data);
       }
-    } catch {
-      /* silent */
-    } finally {
+    } catch {} finally {
       setLoading(false);
     }
   };
@@ -87,7 +84,6 @@ export default function BillingPage() {
     try {
       const { data } = await api.post("/payments/checkout/", { plan_id: planId });
       if (data.demo) {
-        // Demo mode — subscription created directly without Stripe
         toast.success("Subscription activated successfully!");
         setShowSuccess(true);
         setSubscription(data.subscription);
@@ -155,7 +151,7 @@ export default function BillingPage() {
           </motion.div>
         )}
 
-        {/* Current subscription */}
+        
         {hasActiveSub && (
           <motion.div
             className="subscription-card"
@@ -190,7 +186,7 @@ export default function BillingPage() {
           </motion.div>
         )}
 
-        {/* Available plans (show when no active subscription) */}
+        
         {!hasActiveSub && plans.length > 0 && (
           <motion.div
             className="plans-section"
@@ -245,7 +241,7 @@ export default function BillingPage() {
           </div>
         )}
 
-        {/* Payment history */}
+        
         {payments.length > 0 && (
           <motion.div
             className="payment-history"

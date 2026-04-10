@@ -54,10 +54,8 @@ export default function AdminFinancePage() {
   const activeTab = searchParams.get("tab") || "purchases";
   const setActiveTab = (tab) => setSearchParams(tab === "purchases" ? {} : { tab });
 
-  // Stats
   const [stats, setStats] = useState(null);
 
-  // Course purchases
   const [purchases, setPurchases] = useState([]);
   const [cpPage, setCpPage] = useState(1);
   const [cpTotal, setCpTotal] = useState(0);
@@ -68,7 +66,6 @@ export default function AdminFinancePage() {
   const [cpSearch, setCpSearch] = useState("");
   const cpSearchTimer = useRef(null);
 
-  // Transactions
   const [transactions, setTransactions] = useState([]);
   const [txPage, setTxPage] = useState(1);
   const [txTotal, setTxTotal] = useState(0);
@@ -79,14 +76,12 @@ export default function AdminFinancePage() {
   const [txSearch, setTxSearch] = useState("");
   const txSearchTimer = useRef(null);
 
-  // Fetch stats
   useEffect(() => {
     api.get("/payments/stats/")
       .then(({ data }) => setStats(data))
       .catch(() => {});
   }, []);
 
-  // Fetch course purchases
   const fetchPurchases = useCallback(async (pageNum) => {
     setCpLoading(true);
     try {
@@ -118,7 +113,6 @@ export default function AdminFinancePage() {
     cpSearchTimer.current = setTimeout(() => setCpPage(1), 400);
   };
 
-  // Fetch transactions
   const fetchTransactions = useCallback(async (pageNum) => {
     setTxLoading(true);
     try {
@@ -171,7 +165,7 @@ export default function AdminFinancePage() {
           </div>
         </div>
 
-        {/* Stats cards */}
+        
         {stats && (
           <motion.div
             style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}
@@ -208,7 +202,7 @@ export default function AdminFinancePage() {
           </motion.div>
         )}
 
-        {/* Tabs */}
+        
         <div className="user-tabs">
           <button className={`user-tab ${activeTab === "purchases" ? "active" : ""}`} onClick={() => setActiveTab("purchases")}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
@@ -224,7 +218,7 @@ export default function AdminFinancePage() {
 
         <AnimatePresence mode="wait">
 
-          {/* ── Course Purchases Tab ── */}
+          
           {activeTab === "purchases" && (
             <motion.div key="purchases" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               <div className="user-toolbar">
@@ -334,7 +328,7 @@ export default function AdminFinancePage() {
             </motion.div>
           )}
 
-          {/* ── All Transactions Tab ── */}
+          
           {activeTab === "transactions" && (
             <motion.div key="transactions" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               <div className="user-toolbar">

@@ -63,7 +63,6 @@ export default function CourseListPage() {
             const res = await api.get(`/lessons/?course=${course.id}&page_size=1`);
             counts[course.id] = res.data.count ?? (res.data.results || res.data || []).length;
           } catch (err) {
-            // Silently fail for lesson count - not critical
             console.warn(`Failed to load lesson count for course ${course.id}:`, err);
             counts[course.id] = 0;
           }
@@ -74,7 +73,6 @@ export default function CourseListPage() {
       console.error("Failed to fetch courses:", err);
       const errorMsg = getApiErrorMessage(err, "Failed to load courses.");
       toast.error(errorMsg);
-      // Set empty array so UI shows appropriate message
       setCourses([]);
     } finally {
       setLoading(false);
@@ -145,7 +143,6 @@ export default function CourseListPage() {
     return null;
   };
 
-  // Color palette for cards without logos
   const cardColors = [
     "linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)",
     "linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)",
@@ -236,7 +233,7 @@ export default function CourseListPage() {
                         whileHover={{ y: -6, transition: { duration: 0.2 } }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        {/* Big Banner Image / Gradient */}
+                        
                         <div className="course-card-v2-banner" style={course.logo ? {} : { background: gradient }}>
                           {course.logo ? (
                             <img src={course.logo} alt={course.title} className="course-card-v2-banner-img" />
@@ -245,12 +242,12 @@ export default function CourseListPage() {
                               {bookIcon}
                             </div>
                           )}
-                          {/* Overlay badges */}
+                          
                           <div className="course-card-v2-banner-badge">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>
                             {count} lesson{count !== 1 ? "s" : ""}
                           </div>
-                          {/* Price badge */}
+                          
                           <div className="course-card-v2-price-badge" style={{
                             position: "absolute", top: "0.5rem", right: "0.5rem",
                             padding: "0.2rem 0.6rem", borderRadius: 8,
@@ -260,7 +257,7 @@ export default function CourseListPage() {
                           }}>
                             {course.price > 0 ? `$${Number(course.price).toFixed(2)}` : "Free"}
                           </div>
-                          {/* Access indicator for students */}
+                          
                           {!isAdmin && course.is_accessible && course.price > 0 && (
                             <div style={{
                               position: "absolute", top: "0.5rem", left: "0.5rem",
@@ -287,7 +284,7 @@ export default function CourseListPage() {
                           )}
                         </div>
 
-                        {/* Card Body */}
+                        
                         <div className="course-card-v2-body">
                           <h2 className="course-card-v2-title">{course.title}</h2>
                           <p className="course-card-v2-desc">{course.description}</p>

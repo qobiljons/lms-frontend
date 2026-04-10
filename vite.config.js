@@ -49,6 +49,21 @@ export default defineConfig({
         changeOrigin: true,
         bypass: bypassForHtml,
       },
+      '/messages': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        bypass: bypassForHtml,
+      },
+      '/homework': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        bypass: bypassForHtml,
+      },
+      '/ws': {
+        target: 'ws://localhost:8000',
+        ws: true,
+        changeOrigin: true,
+      },
       '/media': {
         target: 'http://localhost:8000',
         changeOrigin: true,

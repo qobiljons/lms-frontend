@@ -57,7 +57,7 @@ export default function LoginPage() {
             <Logo size={42} showText={false} />
           </div>
           <h2>Welcome back</h2>
-          <p>Sign in to your UpGreen account</p>
+          <p>Sign in to your EduFlow account</p>
         </motion.div>
 
         <form onSubmit={handleSubmit}>

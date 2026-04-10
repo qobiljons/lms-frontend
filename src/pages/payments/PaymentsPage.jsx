@@ -31,15 +31,12 @@ export default function PaymentsPage() {
   const [activeTab, setActiveTab] = useState("courses");
   const [loading, setLoading] = useState(true);
 
-  // Courses
   const [courses, setCourses] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [purchasing, setPurchasing] = useState(null);
 
-  // Payment history
   const [payments, setPayments] = useState([]);
 
-  // Success handling
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
@@ -76,9 +73,7 @@ export default function PaymentsPage() {
       if (paymentsRes.status === "fulfilled") {
         setPayments(paymentsRes.value.data.results || paymentsRes.value.data);
       }
-    } catch {
-      /* silent */
-    } finally {
+    } catch {} finally {
       setLoading(false);
     }
   };
@@ -155,7 +150,7 @@ export default function PaymentsPage() {
           </motion.div>
         )}
 
-        {/* Tabs */}
+        
         <div className="payments-tabs">
           <button className={`payments-tab ${activeTab === "courses" ? "active" : ""}`} onClick={() => setActiveTab("courses")}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
@@ -176,7 +171,7 @@ export default function PaymentsPage() {
         </div>
 
         <AnimatePresence mode="wait">
-          {/* ── Available Courses Tab ── */}
+          
           {activeTab === "courses" && (
             <motion.div key="courses" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               {availableCourses.length > 0 && (
@@ -283,7 +278,7 @@ export default function PaymentsPage() {
             </motion.div>
           )}
 
-          {/* ── My Purchases Tab ── */}
+          
           {activeTab === "purchased" && (
             <motion.div key="purchased" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               {purchases.length > 0 ? (
@@ -318,7 +313,7 @@ export default function PaymentsPage() {
             </motion.div>
           )}
 
-          {/* ── Payment History Tab ── */}
+          
           {activeTab === "history" && (
             <motion.div key="history" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               {payments.length > 0 ? (

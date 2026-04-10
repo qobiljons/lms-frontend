@@ -105,7 +105,7 @@ export default function SignupPage() {
             <Logo size={42} showText={false} />
           </div>
           <h2>Create account</h2>
-          <p>Join the UpGreen learning platform</p>
+          <p>Join the EduFlow learning platform</p>
         </motion.div>
 
         <form onSubmit={handleSubmit}>

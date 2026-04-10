@@ -29,9 +29,7 @@ function generatePageNumbers(current, total) {
   return pages;
 }
 
-/* ──────────────────────────────────────────────
-   Searchable Multi-Select with chips + filter
-   ────────────────────────────────────────────── */
+
 function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, placeholder, avatarFn }) {
   const [query, setQuery] = useState("");
   const inputRef = useRef(null);
@@ -54,7 +52,7 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
 
   return (
     <div className="sms-wrapper" ref={containerRef}>
-      {/* Selected chips */}
+      
       {selectedItems.length > 0 && (
         <div className="sms-chips">
           {selectedItems.map((item) => (
@@ -91,7 +89,7 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
         </div>
       )}
 
-      {/* Search input */}
+      
       <div className="sms-search">
         <svg className="sms-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8" />
@@ -120,7 +118,7 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
         <span className="sms-count">{selected.length} selected</span>
       </div>
 
-      {/* Options list */}
+      
       <div className="sms-options">
         {filtered.length === 0 ? (
           <span className="sms-empty">
@@ -159,9 +157,7 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
   );
 }
 
-/* ──────────────────────────────────────────────
-   Main Page
-   ────────────────────────────────────────────── */
+
 export default function AdminGroupsPage() {
   const [groups, setGroups] = useState([]);
   const [page, setPage] = useState(1);
@@ -177,25 +173,20 @@ export default function AdminGroupsPage() {
   const activeTab = searchParams.get("tab") === "create" ? "create" : "list";
   const setActiveTab = (tab) => setSearchParams(tab === "create" ? { tab: "create" } : {});
 
-  // Dropdown data
   const [instructors, setInstructors] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
 
-  // Create form
   const [form, setForm] = useState({ name: "", description: "", instructor: "", students: [], courses: [] });
   const [submitting, setSubmitting] = useState(false);
 
-  // Edit state
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", description: "", instructor: "", students: [], courses: [] });
   const [saving, setSaving] = useState(false);
 
-  // Delete state
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Fetch dropdown data on mount
   useEffect(() => {
     const fetchDropdowns = async () => {
       try {
@@ -207,7 +198,7 @@ export default function AdminGroupsPage() {
         setInstructors(instrRes.data.results || instrRes.data);
         setAllStudents(studRes.data.results || studRes.data);
         setAllCourses(courseRes.data.results || courseRes.data);
-      } catch { /* silent */ }
+      } catch {}
     };
     fetchDropdowns();
   }, []);
@@ -245,7 +236,6 @@ export default function AdminGroupsPage() {
     searchTimer.current = setTimeout(() => setPage(1), 400);
   };
 
-  // Create handlers
   const handleFormChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const toggleFormArray = (field, id) => {
@@ -284,7 +274,6 @@ export default function AdminGroupsPage() {
     }
   };
 
-  // Edit handlers
   const startEdit = async (group) => {
     try {
       const { data } = await api.get(`/groups/${group.id}/`);
@@ -341,7 +330,6 @@ export default function AdminGroupsPage() {
     }
   };
 
-  // Delete handler
   const handleDelete = async (groupId) => {
     setDeleting(true);
     try {
@@ -363,7 +351,6 @@ export default function AdminGroupsPage() {
 
   const totalPages = Math.ceil(total / pageSize);
 
-  // Helper to get avatar URL for a student
   const studentAvatarFn = (s) => getAvatarUrl(s.profile);
   const studentLabelFn = (s) => `${s.first_name} ${s.last_name} (@${s.username})`;
   const courseLabelFn = (c) => c.title;

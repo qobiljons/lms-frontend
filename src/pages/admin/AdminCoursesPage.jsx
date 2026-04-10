@@ -48,20 +48,17 @@ export default function AdminCoursesPage() {
   const activeTab = searchParams.get("tab") === "create" ? "create" : "list";
   const setActiveTab = (tab) => setSearchParams(tab === "create" ? { tab: "create" } : {});
 
-  // Create form
   const [form, setForm] = useState({ title: "", description: "", price: "0" });
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Edit state
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", description: "", price: "0" });
   const [editLogoFile, setEditLogoFile] = useState(null);
   const [editLogoPreview, setEditLogoPreview] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Delete state
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -81,7 +78,6 @@ export default function AdminCoursesPage() {
         setPreviousPage(data.previous);
         setPage(pageNum);
 
-        // Fetch lesson counts
         const counts = {};
         await Promise.all(
           courseList.map(async (course) => {
@@ -116,7 +112,6 @@ export default function AdminCoursesPage() {
     }, 400);
   };
 
-  // Create handlers
   const handleFormChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -159,7 +154,6 @@ export default function AdminCoursesPage() {
     }
   };
 
-  // Edit handlers
   const startEdit = (course) => {
     setEditingId(course.id);
     setEditForm({ title: course.title, description: course.description || "", price: course.price ?? "0" });
@@ -210,7 +204,6 @@ export default function AdminCoursesPage() {
     }
   };
 
-  // Delete handler
   const handleDelete = async (slug) => {
     setDeleting(true);
     try {

@@ -193,7 +193,7 @@ export default function MyGroupsPage() {
                         transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                       >
                         <div className="mygroup-body-inner">
-                          {/* Instructor Section */}
+                          
                           {group.instructor_detail && (
                             <div className="mygroup-section">
                               <h4 className="mygroup-section-title">
@@ -236,7 +236,7 @@ export default function MyGroupsPage() {
                             </div>
                           )}
 
-                          {/* Students Section */}
+                          
                           <div className="mygroup-section">
                             <div className="mygroup-section-header">
                               <h4 className="mygroup-section-title">
@@ -305,7 +305,7 @@ export default function MyGroupsPage() {
                             )}
                           </div>
 
-                          {/* Courses Section */}
+                          
                           {group.courses_detail?.length > 0 && (
                             <div className="mygroup-section">
                               <h4 className="mygroup-section-title">

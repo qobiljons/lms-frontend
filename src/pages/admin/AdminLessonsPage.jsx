@@ -49,7 +49,6 @@ export default function AdminLessonsPage() {
   const activeTab = searchParams.get("tab") === "create" ? "create" : "list";
   const setActiveTab = (tab) => setSearchParams(tab === "create" ? { tab: "create" } : {});
 
-  // Create form
   const [form, setForm] = useState({
     title: "",
     content: "",
@@ -60,7 +59,6 @@ export default function AdminLessonsPage() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // Edit state
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({
     title: "",
@@ -71,19 +69,15 @@ export default function AdminLessonsPage() {
   });
   const [saving, setSaving] = useState(false);
 
-  // Delete state
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Fetch courses for dropdown
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const { data } = await api.get("/courses/?page_size=100");
         setCourses(data.results || data);
-      } catch {
-        /* silent */
-      }
+      } catch {}
     };
     fetchCourses();
   }, []);
@@ -132,7 +126,6 @@ export default function AdminLessonsPage() {
     return found ? found.title : `Course #${lesson.course}`;
   };
 
-  // Create handlers
   const handleFormChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -166,7 +159,6 @@ export default function AdminLessonsPage() {
     }
   };
 
-  // Edit handlers
   const startEdit = (lesson) => {
     setEditingId(lesson.id);
     setEditForm({
@@ -204,7 +196,6 @@ export default function AdminLessonsPage() {
     }
   };
 
-  // Delete handler
   const handleDelete = async (lessonId) => {
     setDeleting(true);
     try {

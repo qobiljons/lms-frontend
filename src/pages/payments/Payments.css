@@ -18,7 +18,7 @@
   margin: 0 0 2rem;
 }
 
-/* Tabs */
+
 .payments-tabs {
   display: flex;
   gap: 0.25rem;
@@ -84,7 +84,7 @@
   color: #16a34a;
 }
 
-/* Section titles */
+
 .section-title {
   font-size: 1rem;
   font-weight: 600;
@@ -92,7 +92,7 @@
   margin: 0 0 1rem;
 }
 
-/* Course cards grid */
+
 .courses-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -233,7 +233,7 @@
   animation: payments-spin 0.6s linear infinite;
 }
 
-/* Purchases list */
+
 .purchases-list {
   display: flex;
   flex-direction: column;
@@ -287,7 +287,7 @@
   color: #16a34a;
 }
 
-/* Payment history table */
+
 .payments-table-wrap {
   background: #fff;
   border-radius: 12px;
@@ -325,7 +325,7 @@
   border-bottom: none;
 }
 
-/* Empty / loading states */
+
 .payments-empty {
   text-align: center;
   padding: 3rem 1rem;
@@ -361,7 +361,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Success banner */
+
 .payments-success {
   background: rgba(22, 163, 74, 0.08);
   border: 1px solid rgba(22, 163, 74, 0.2);
@@ -376,7 +376,7 @@
   font-weight: 500;
 }
 
-/* Dark mode */
+
 [data-theme="dark"] .payments-tabs {
   border-color: rgba(255, 255, 255, 0.06);
 }

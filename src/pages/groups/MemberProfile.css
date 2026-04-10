@@ -4,7 +4,7 @@
   padding: 2.5rem 1.5rem;
 }
 
-/* Loading */
+
 .member-profile-loading {
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Error */
+
 .member-profile-error {
   text-align: center;
   padding: 4rem 2rem;
@@ -86,7 +86,7 @@
   background: rgba(22, 163, 74, 0.04);
 }
 
-/* Nav */
+
 .member-profile-nav {
   margin-bottom: 1.5rem;
 }
@@ -106,7 +106,7 @@
   color: var(--accent);
 }
 
-/* Hero */
+
 .member-profile-hero {
   display: flex;
   align-items: center;
@@ -178,7 +178,7 @@
   letter-spacing: 0.04em;
 }
 
-/* Detail cards */
+
 .member-profile-details {
   display: flex;
   flex-direction: column;
@@ -207,7 +207,7 @@
   color: var(--accent);
 }
 
-/* Fields */
+
 .member-profile-fields {
   display: flex;
   flex-direction: column;
@@ -246,7 +246,7 @@
   color: var(--text-primary);
 }
 
-/* Bio */
+
 .member-profile-bio {
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -254,7 +254,7 @@
   margin: 0;
 }
 
-/* Groups chips */
+
 .member-profile-groups {
   display: flex;
   flex-wrap: wrap;
@@ -274,7 +274,7 @@
   border: 1px solid rgba(22, 163, 74, 0.15);
 }
 
-/* Responsive */
+
 @media (max-width: 640px) {
   .member-profile-page {
     padding: 1.5rem 1rem;
@@ -297,7 +297,7 @@
   }
 }
 
-/* Dark mode */
+
 [data-theme="dark"] .member-profile-error {
   background: #161616;
   border-color: rgba(255, 255, 255, 0.06);

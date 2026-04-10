@@ -18,7 +18,7 @@
   margin: 0 0 2rem;
 }
 
-/* Current subscription card */
+
 .subscription-card {
   background: #fff;
   border-radius: 16px;
@@ -68,7 +68,7 @@
   color: var(--text-primary);
 }
 
-/* Plans grid */
+
 .plans-section h3 {
   font-size: 1.1rem;
   font-weight: 600;
@@ -148,7 +148,7 @@
   cursor: not-allowed;
 }
 
-/* Payment history */
+
 .payment-history {
   margin-top: 2rem;
 }
@@ -194,7 +194,7 @@
   border-bottom: none;
 }
 
-/* Empty / loading */
+
 .billing-empty {
   text-align: center;
   padding: 3rem 1rem;
@@ -230,7 +230,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Success banner */
+
 .billing-success {
   background: rgba(22, 163, 74, 0.08);
   border: 1px solid rgba(22, 163, 74, 0.2);
@@ -245,7 +245,7 @@
   font-weight: 500;
 }
 
-/* Dark mode */
+
 [data-theme="dark"] .subscription-card,
 [data-theme="dark"] .plan-card,
 [data-theme="dark"] .payment-table {

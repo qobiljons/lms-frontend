@@ -89,7 +89,6 @@ export default function AttendanceManagePage() {
   const [editingSessionId, setEditingSessionId] = useState(null);
   const [editingSession, setEditingSession] = useState(null);
 
-  // Filters
   const [filterGroup, setFilterGroup] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
   const [filterDateFrom, setFilterDateFrom] = useState("");
@@ -98,7 +97,6 @@ export default function AttendanceManagePage() {
   const isAdmin = user?.role === "admin";
   const groupsEndpoint = isAdmin ? "/groups/?page_size=1000" : "/groups/my/";
 
-  // Filter sessions based on selected filters
   const filteredSessions = useMemo(() => {
     return sessions.filter((session) => {
       if (filterGroup && String(session.group) !== String(filterGroup)) return false;
@@ -109,7 +107,6 @@ export default function AttendanceManagePage() {
     });
   }, [sessions, filterGroup, filterCourse, filterDateFrom, filterDateTo]);
 
-  // Group sessions by date for better organization
   const sessionsByDate = useMemo(() => {
     const grouped = {};
     filteredSessions.forEach((session) => {
@@ -120,7 +117,6 @@ export default function AttendanceManagePage() {
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0]));
   }, [filteredSessions]);
 
-  // Check for duplicate warning
   const duplicateWarning = useMemo(() => {
     if (!form.group || !form.session_date) return null;
     const existing = sessions.find(
@@ -182,7 +178,6 @@ export default function AttendanceManagePage() {
     } catch (err) {
       const errorMsg = getApiErrorMessage(err, "Failed to load group details");
       console.error("Error loading group details:", errorMsg);
-      // Fallback to cached data if available
       if (selectedGroup) {
         setGroupStudents(selectedGroup.students_detail || []);
         setGroupCourses(selectedGroup.courses_detail || []);
