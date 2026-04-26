@@ -115,7 +115,6 @@ const instructorLinks = [
 const tutorLink = {
   to: "/tutor",
   label: "Tutor AI",
-  badge: "NEW",
   icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v2"/><path d="M9 7a3 3 0 0 1 6 0v1H9V7z"/><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="14" r="1" fill="currentColor"/><circle cx="15" cy="14" r="1" fill="currentColor"/><path d="M9 17h6"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>,
 };
 
