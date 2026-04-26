@@ -14,6 +14,7 @@ export default function CourseDetailPage() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lessonCount, setLessonCount] = useState(0);
+  const [firstLessonId, setFirstLessonId] = useState(null);
   const [purchasing, setPurchasing] = useState(false);
 
   const isAdmin = user?.role === "admin";
@@ -28,13 +29,23 @@ export default function CourseDetailPage() {
         setCourse(data);
 
         try {
-          const lessonsRes = await api.get(`/lessons/?course=${data.id}&page_size=1`);
-          setLessonCount(lessonsRes.data.count || 0);
+          const lessonsRes = await api.get(`/lessons/?course=${data.id}&page_size=200`);
+          const list = Array.isArray(lessonsRes.data?.results) ? lessonsRes.data.results : (Array.isArray(lessonsRes.data) ? lessonsRes.data : []);
+          setLessonCount(lessonsRes.data?.count ?? list.length);
+          if (list.length) {
+            const sorted = [...list].sort((a, b) => {
+              const aDate = a.created_at ? new Date(a.created_at).getTime() : 0;
+              const bDate = b.created_at ? new Date(b.created_at).getTime() : 0;
+              return aDate - bDate;
+            });
+            setFirstLessonId(sorted[0].id);
+          }
         } catch {
           setLessonCount(0);
         }
       } catch (err) {
-        toast.error(err?.response?.data?.detail || "Failed to load course.");
+        const msg = err?.response?.data?.detail || "Failed to load course.";
+        toast.error(msg, { toastId: `course-load-${slug}` });
         navigate("/courses");
       } finally {
         setLoading(false);
@@ -86,183 +97,66 @@ export default function CourseDetailPage() {
 
   return (
     <PageTransition>
-      <div className="course-detail-page">
-
-        <nav className="breadcrumb">
-          <Link to="/courses" className="breadcrumb-link">Courses</Link>
-          <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-current">{course.title}</span>
-        </nav>
+      <div className="cd-page">
+        <Link to="/courses" className="cd-back">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          All courses
+        </Link>
 
         <motion.div
-          className="course-hero"
-          initial={{ opacity: 0, y: 20 }}
+          className="cd-hero"
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.3 }}
         >
-          <div className="course-hero-content">
-            <div className="course-hero-left">
-              {course.logo && (
-                <img src={course.logo} alt={course.title} className="course-hero-logo" />
-              )}
-              <div>
-                <h1>{course.title}</h1>
-                {course.description && (
-                  <p className="course-hero-description">{course.description}</p>
-                )}
+          {course.logo && <img src={course.logo} alt="" className="cd-logo" />}
+          <h1 className="cd-title">{course.title}</h1>
+          {course.description && <p className="cd-description">{course.description}</p>}
 
-                <div className="course-meta">
-                  <span className="course-meta-item">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    {lessonCount} Lesson{lessonCount !== 1 ? "s" : ""}
-                  </span>
-
-                  <span className="course-meta-item">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    {new Date(course.created_at).toLocaleDateString()}
-                  </span>
-
-                  {!isAdmin && !isInstructor && !course.is_purchased && (
-                    <span className={`course-price-badge ${isFree ? 'free' : 'paid'}`}>
-                      {isFree ? 'Free' : `$${Number(course.price).toFixed(2)}`}
-                    </span>
-                  )}
-
-                  {!isAdmin && !isInstructor && !isFree && course.is_purchased && (
-                    <span className="course-status-badge purchased">
-                      ✓ Owned
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="course-hero-actions">
-              {hasAccess ? (
-                <button
-                  className="btn-primary btn-lg"
-                  onClick={() => navigate(`/courses/${slug}/lessons`)}
-                >
-                  View Lessons →
-                </button>
-              ) : needsPurchase ? (
-                <button
-                  className="btn-primary btn-lg"
-                  onClick={handlePurchase}
-                  disabled={purchasing}
-                >
-                  {purchasing ? "Processing..." : `Purchase for $${Number(course.price).toFixed(2)}`}
-                </button>
-              ) : (
-                <button className="btn-secondary btn-lg" disabled>
-                  Not Available
-                </button>
-              )}
-
-              {(isAdmin || isInstructor) && (
-                <button
-                  className="btn-secondary"
-                  onClick={() => navigate(`/admin/courses`)}
-                >
-                  Manage Course
-                </button>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="course-stats-grid"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <div className="stat-card">
-            <div className="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-              </svg>
-            </div>
-            <div>
-              <div className="stat-value">{lessonCount}</div>
-              <div className="stat-label">Total Lessons</div>
-            </div>
+          <div className="cd-meta">
+            <span className="cd-meta-item">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              {lessonCount} lesson{lessonCount !== 1 ? "s" : ""}
+            </span>
+            {!isAdmin && !isInstructor && course.is_purchased && (
+              <span className="cd-meta-item cd-meta-owned">✓ Owned</span>
+            )}
+            {!isAdmin && !isInstructor && !course.is_purchased && isFree && (
+              <span className="cd-meta-item cd-meta-free">Free</span>
+            )}
+            {!isAdmin && !isInstructor && !course.is_purchased && !isFree && (
+              <span className="cd-meta-item cd-meta-price">${Number(course.price).toFixed(2)}</span>
+            )}
           </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-            </div>
-            <div>
-              <div className="stat-value">{isFree ? 'Free' : 'Premium'}</div>
-              <div className="stat-label">Course Type</div>
-            </div>
+          <div className="cd-actions">
+            {hasAccess ? (
+              <button
+                className="cd-btn-primary"
+                onClick={() => navigate(firstLessonId ? `/lessons/${firstLessonId}` : `/courses/${slug}/lessons`)}
+              >
+                {firstLessonId ? "Start Learning →" : "View Lessons →"}
+              </button>
+            ) : needsPurchase ? (
+              <button
+                className="cd-btn-primary"
+                onClick={handlePurchase}
+                disabled={purchasing}
+              >
+                {purchasing ? "Processing..." : `Buy for $${Number(course.price).toFixed(2)}`}
+              </button>
+            ) : (
+              <button className="cd-btn-primary" disabled>Not Available</button>
+            )}
+            {(isAdmin || isInstructor) && (
+              <button
+                className="cd-btn-ghost"
+                onClick={() => navigate(`/admin/courses`)}
+              >
+                Manage
+              </button>
+            )}
           </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div>
-              <div className="stat-value">{hasAccess ? 'Enrolled' : 'Available'}</div>
-              <div className="stat-label">Status</div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="course-about card"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <h2>About This Course</h2>
-          <p>
-            {course.description || "This course provides comprehensive learning materials to help you master the subject."}
-          </p>
-
-          {lessonCount > 0 && (
-            <div className="course-cta">
-              <p>Ready to start learning?</p>
-              {hasAccess ? (
-                <button
-                  className="btn-primary"
-                  onClick={() => navigate(`/courses/${slug}/lessons`)}
-                >
-                  Start Learning
-                </button>
-              ) : needsPurchase ? (
-                <button
-                  className="btn-primary"
-                  onClick={handlePurchase}
-                  disabled={purchasing}
-                >
-                  {purchasing ? "Processing..." : "Enroll Now"}
-                </button>
-              ) : null}
-            </div>
-          )}
-        </motion.div>
-
-        <motion.div
-          className="course-navigation"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-        >
-          <button className="btn-secondary" onClick={() => navigate("/courses")}>
-            ← Back to Courses
-          </button>
         </motion.div>
       </div>
     </PageTransition>

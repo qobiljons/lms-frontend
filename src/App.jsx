@@ -9,7 +9,6 @@ import AppLayout from "./components/AppLayout";
 import { ProtectedRoute, RoleRoute, GuestRoute } from "./components/ProtectedRoute";
 
 import LoginPage from "./pages/auth/LoginPage";
-import SignupPage from "./pages/auth/SignupPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import UserListPage from "./pages/admin/UserListPage";
 import CreateUserPage from "./pages/admin/CreateUserPage";
@@ -31,6 +30,8 @@ import AttendanceManagePage from "./pages/attendance/AttendanceManagePage";
 import AttendanceMyPage from "./pages/attendance/AttendanceMyPage";
 import MessagingPage from "./pages/messaging/MessagingPage";
 import TutorPage from "./pages/tutor/TutorPage";
+import HomeworkSubmissionPage from "./pages/homework/HomeworkSubmissionPage";
+import HomeworkListPage from "./pages/homework/HomeworkListPage";
 
 function App() {
   const location = useLocation();
@@ -50,14 +51,7 @@ function App() {
                 </GuestRoute>
               }
             />
-            <Route
-              path="/signup"
-              element={
-                <GuestRoute>
-                  <SignupPage />
-                </GuestRoute>
-              }
-            />
+            <Route path="/signup" element={<Navigate to="/login" replace />} />
 
             <Route
               path="/dashboard"
@@ -157,6 +151,22 @@ function App() {
                 <RoleRoute roles={["student"]}>
                   <TutorPage />
                 </RoleRoute>
+              }
+            />
+            <Route
+              path="/homework"
+              element={
+                <RoleRoute roles={["student"]}>
+                  <HomeworkListPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/homework/:id"
+              element={
+                <ProtectedRoute>
+                  <HomeworkSubmissionPage />
+                </ProtectedRoute>
               }
             />
             <Route

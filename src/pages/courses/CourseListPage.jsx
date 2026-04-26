@@ -139,7 +139,33 @@ export default function CourseListPage() {
     return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
   };
 
+  const [firstLessonByCourse, setFirstLessonByCourse] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchFirsts = async () => {
+      const map = {};
+      await Promise.all(
+        courses.map(async (c) => {
+          if (!c.is_accessible && user?.role !== "admin" && user?.role !== "instructor") return;
+          try {
+            const { data } = await api.get(`/lessons/?course=${c.id}&page_size=1&ordering=created_at`);
+            const first = (data?.results || data || [])[0];
+            if (first?.id) map[c.id] = first.id;
+          } catch {}
+        })
+      );
+      if (!cancelled) setFirstLessonByCourse(map);
+    };
+    if (courses.length > 0) fetchFirsts();
+    return () => { cancelled = true; };
+  }, [courses, user?.role]);
+
   const getCoursePath = (course) => {
+    const accessible = course?.is_accessible || user?.role === "admin" || user?.role === "instructor";
+    if (accessible && firstLessonByCourse[course.id]) {
+      return `/lessons/${firstLessonByCourse[course.id]}`;
+    }
     if (course?.slug) return `/courses/${course.slug}`;
     if (course?.id != null) return `/courses/${course.id}`;
     return null;
@@ -212,93 +238,56 @@ export default function CourseListPage() {
                   <p>{search ? "Try a different search term." : (isAdmin ? "No courses have been created yet." : "No courses assigned yet.")}</p>
                 </div>
               ) : (
-                <div className="course-cards-grid">
+                <div className="cl-grid">
                   {courses.map((course, ci) => {
                     const count = lessonCounts[course.id] ?? 0;
-                    const gradient = cardColors[ci % cardColors.length];
-
+                    const accentList = ["#16a34a", "#3b82f6", "#f59e0b", "#8b5cf6", "#ef4444", "#06b6d4"];
+                    const accent = accentList[ci % accentList.length];
                     const coursePath = getCoursePath(course);
+                    const accessible = course.is_accessible || isStaff;
+
                     return (
                       <motion.div
                         key={course.id}
-                        className="course-card-v2"
-                        onClick={() => {
-                          if (!coursePath) {
-                            toast.error("This course is missing a valid identifier.");
-                            return;
-                          }
-                          navigate(coursePath);
-                        }}
-                        initial={{ opacity: 0, y: 24 }}
+                        className={`cl-card ${accessible ? "cl-card-accessible" : "cl-card-locked"}`}
+                        style={{ "--accent": accent }}
+                        onClick={() => coursePath && navigate(coursePath)}
+                        initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: ci * 0.07, duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                        whileTap={{ scale: 0.98 }}
+                        transition={{ delay: Math.min(ci * 0.04, 0.3), duration: 0.25 }}
+                        whileHover={{ y: -3 }}
                       >
-
-                        <div className="course-card-v2-banner" style={course.logo ? {} : { background: gradient }}>
+                        <div className="cl-card-icon" style={{ background: accent }}>
                           {course.logo ? (
-                            <img src={course.logo} alt={course.title} className="course-card-v2-banner-img" />
+                            <img src={course.logo} alt="" />
                           ) : (
-                            <div className="course-card-v2-banner-icon">
-                              {bookIcon}
-                            </div>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
                           )}
+                        </div>
 
-                          <div className="course-card-v2-banner-badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>
+                        <h2 className="cl-card-title">{course.title}</h2>
+                        <p className="cl-card-desc">{course.description}</p>
+
+                        <div className="cl-card-meta">
+                          <span className="cl-meta-pill">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                             {count} lesson{count !== 1 ? "s" : ""}
-                          </div>
-
-                          {!isStaff && !course.is_purchased && (
-                            <div className="course-card-v2-price-badge" style={{
-                              position: "absolute", top: "0.5rem", right: "0.5rem",
-                              padding: "0.2rem 0.6rem", borderRadius: 8,
-                              fontSize: "0.75rem", fontWeight: 700,
-                              background: course.price > 0 ? "rgba(0,0,0,0.7)" : "rgba(22,163,74,0.85)",
-                              color: "#fff", backdropFilter: "blur(8px)",
-                            }}>
-                              {course.price > 0 ? `$${Number(course.price).toFixed(2)}` : "Free"}
-                            </div>
+                          </span>
+                          {!isStaff && course.is_purchased && (
+                            <span className="cl-meta-pill cl-meta-owned">✓ Owned</span>
                           )}
-
-                          {!isStaff && course.is_accessible && course.price > 0 && (
-                            <div style={{
-                              position: "absolute", top: "0.5rem", left: "0.5rem",
-                              padding: "0.2rem 0.5rem", borderRadius: 8,
-                              fontSize: "0.7rem", fontWeight: 600,
-                              background: "rgba(22,163,74,0.85)", color: "#fff",
-                              display: "flex", alignItems: "center", gap: "0.25rem",
-                            }}>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                              {course.is_purchased ? "Owned" : "VIP"}
-                            </div>
+                          {!isStaff && !course.is_purchased && course.price === 0 && (
+                            <span className="cl-meta-pill cl-meta-free">Free</span>
                           )}
                           {!isStaff && !course.is_accessible && course.price > 0 && (
-                            <div style={{
-                              position: "absolute", top: "0.5rem", left: "0.5rem",
-                              padding: "0.2rem 0.5rem", borderRadius: 8,
-                              fontSize: "0.7rem", fontWeight: 600,
-                              background: "rgba(0,0,0,0.6)", color: "#fff",
-                              display: "flex", alignItems: "center", gap: "0.25rem",
-                            }}>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                              Locked
-                            </div>
+                            <span className="cl-meta-pill cl-meta-price">${Number(course.price).toFixed(2)}</span>
                           )}
                         </div>
 
-                        <div className="course-card-v2-body">
-                          <h2 className="course-card-v2-title">{course.title}</h2>
-                          <p className="course-card-v2-desc">{course.description}</p>
-                          <div className="course-card-v2-footer">
-                            <span className="course-card-v2-date">{formatDate(course.created_at)}</span>
-                            <span className="course-card-v2-cta">
-                              View Course
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-                            </span>
-                          </div>
-                        </div>
+                        <span className="cl-card-cta" style={{ color: accent }}>
+                          {accessible ? "Continue learning" : "View course"}
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </span>
                       </motion.div>
                     );
                   })}

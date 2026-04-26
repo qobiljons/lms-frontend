@@ -157,48 +157,47 @@ export default function AdminFinancePage() {
 
   return (
     <PageTransition>
-      <div className="admin-container">
-        <div className="admin-header">
+      <div className="admin-container fin-page">
+        <div className="fin-header">
           <div>
-            <h1>Finance</h1>
-            <p className="admin-subtitle">Track course payments and revenue</p>
+            <h1 className="fin-title">Finance</h1>
+            <p className="fin-subtitle">Course payments &amp; revenue overview</p>
           </div>
+          {stats && (
+            <div className="fin-hero-amount">
+              <span className="fin-hero-value">{formatCurrency(stats.total_revenue || 0)}</span>
+              <span className="fin-hero-label">Total revenue · all time</span>
+            </div>
+          )}
         </div>
 
         {stats && (
-          <motion.div
-            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="fin-kpi-strip">
             {[
-              { label: "Total Revenue", value: formatCurrency(stats.total_revenue), icon: "💰", color: "#16a34a", bg: "rgba(22,163,74,0.08)" },
-              { label: "This Month", value: formatCurrency(stats.monthly_revenue), icon: "📈", color: "#3b82f6", bg: "rgba(59,130,246,0.08)" },
-              { label: "Course Purchases", value: stats.total_course_purchases || 0, icon: "📚", color: "#ec4899", bg: "rgba(236,72,153,0.08)" },
-              { label: "Payments Made", value: stats.total_payments || 0, icon: "🧾", color: "#8b5cf6", bg: "rgba(139,92,246,0.08)" },
+              { label: "This Month", value: formatCurrency(stats.monthly_revenue || 0), color: "#16a34a",
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> },
+              { label: "Course Sales", value: (stats.total_course_purchases || 0).toLocaleString(), color: "#3b82f6",
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg> },
+              { label: "Successful Payments", value: (stats.total_payments || 0).toLocaleString(), color: "#8b5cf6",
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> },
+              { label: "Avg Sale", value: stats.total_course_purchases ? formatCurrency((stats.total_revenue || 0) / stats.total_course_purchases) : "—", color: "#f59e0b",
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
             ].map((s, i) => (
               <motion.div
                 key={s.label}
-                className="admin-stat"
-                whileHover={{ y: -4, boxShadow: `0 8px 24px ${s.color}20` }}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.05 + i * 0.06, type: "spring", stiffness: 300, damping: 25 }}
-                style={{ borderTop: `3px solid ${s.color}` }}
+                className="fin-kpi"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <div className="admin-stat-icon" style={{ background: s.bg }}>
-                  <span>{s.icon}</span>
+                <div className="fin-kpi-head">
+                  <span className="fin-kpi-icon" style={{ background: `${s.color}18`, color: s.color }}>{s.icon}</span>
+                  <span className="fin-kpi-label">{s.label}</span>
                 </div>
-                <div className="admin-stat-info">
-                  <span className="admin-stat-value" style={{ color: s.color }}>
-                    {typeof s.value === "number" ? s.value.toLocaleString() : s.value}
-                  </span>
-                  <span className="admin-stat-label">{s.label}</span>
-                </div>
+                <span className="fin-kpi-value">{s.value}</span>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         )}
 
         <div className="user-tabs">

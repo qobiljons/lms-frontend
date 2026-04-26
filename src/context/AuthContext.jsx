@@ -49,13 +49,6 @@ export function AuthProvider({ children }) {
     return userData;
   };
 
-  const signup = async (formData) => {
-    const { data } = await api.post("/auth/signup/", formData);
-    const { tokens, ...userData } = data;
-    saveAuth(userData, tokens);
-    return userData;
-  };
-
   const logout = async () => {
     try {
       const tokens = JSON.parse(localStorage.getItem("tokens"));
@@ -67,7 +60,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const value = { user, loading, login, signup, logout };
+  const value = { user, loading, login, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,12 +1,16 @@
+const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+
 export function getAvatarUrl(profile) {
   const raw = profile?.avatar || profile?.default_avatar || null;
-  if (!raw) return null;
-  try {
-    const url = new URL(raw);
-    if (url.pathname.startsWith("/media/")) return url.pathname;
-  } catch  {
-    return raw;
-  }
+  if (!raw || typeof raw !== "string") return null;
+
+  if (/^https?:\/\//i.test(raw)) return raw;
+
+  if (raw.startsWith("/")) return `${API_BASE}${raw}`;
+
+  if (API_BASE) return `${API_BASE}/${raw}`;
+
+  return raw;
 }
 
 export function avatarErrorHandler(profile) {

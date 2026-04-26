@@ -643,7 +643,7 @@ export default function DashboardPage() {
 
           <motion.div className="db-welcome" variants={fadeUp}>
             <div className="db-welcome-text">
-              <h1>{greeting()}, <span className="db-highlight">{user.first_name || user.username}</span></h1>
+              <h1>{greeting()}, <span className="db-highlight"> {user.first_name || user.username}</span></h1>
               <p className="db-welcome-sub">
                 {user.role === "admin" && "Here\u2019s your platform overview"}
                 {user.role === "instructor" && "Here\u2019s your teaching overview"}

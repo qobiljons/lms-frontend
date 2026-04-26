@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -138,8 +138,7 @@ export default function LoginPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          Don&apos;t have an account?{" "}
-          <Link to="/signup">Create one</Link>
+          Need an account? Contact your administrator.
         </motion.p>
       </motion.div>
     </div>
