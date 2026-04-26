@@ -373,41 +373,43 @@ export default function MessagingPage() {
                     onChange={(event) => setSearchTerm(event.target.value)}
                   />
                 </div>
-                <div className="messages-section-label">Start new chat</div>
-                <div className="messages-list">
-                  {reachableUsers.map((person) => (
-                    <button
-                      key={`reachable-${person.id}`}
-                      className={`messages-item ${
-                        selectedDirectUser?.id === person.id ? "active" : ""
-                      }`}
-                      onClick={() => selectDirectUser(person)}
-                    >
-                      <span>{person.username}</span>
-                      <small>{person.role}</small>
-                    </button>
-                  ))}
-                </div>
+                <div className="messages-sidebar-scroll">
+                  <div className="messages-section-label">Start new chat</div>
+                  <div className="messages-list">
+                    {reachableUsers.map((person) => (
+                      <button
+                        key={`reachable-${person.id}`}
+                        className={`messages-item ${
+                          selectedDirectUser?.id === person.id ? "active" : ""
+                        }`}
+                        onClick={() => selectDirectUser(person)}
+                      >
+                        <span>{person.username}</span>
+                        <small>{person.role}</small>
+                      </button>
+                    ))}
+                  </div>
 
-                <div className="messages-section-label">Recent chats</div>
-                <div className="messages-list">
-                  {directConversations.map((conversation) => (
-                    <button
-                      key={`direct-${conversation.id}`}
-                      className={`messages-item ${
-                        selectedDirectUser?.id === conversation.other_user?.id ? "active" : ""
-                      }`}
-                      onClick={() => selectDirectUser(conversation.other_user)}
-                    >
-                      <div className="messages-item-content">
-                        <span>{conversation.other_user?.username || "Unknown"}</span>
-                        <small>{conversation.last_message?.body || "No messages yet"}</small>
-                      </div>
-                      {conversation.unread_count > 0 && (
-                        <span className="messages-unread-badge">{conversation.unread_count}</span>
-                      )}
-                    </button>
-                  ))}
+                  <div className="messages-section-label">Recent chats</div>
+                  <div className="messages-list">
+                    {directConversations.map((conversation) => (
+                      <button
+                        key={`direct-${conversation.id}`}
+                        className={`messages-item ${
+                          selectedDirectUser?.id === conversation.other_user?.id ? "active" : ""
+                        }`}
+                        onClick={() => selectDirectUser(conversation.other_user)}
+                      >
+                        <div className="messages-item-content">
+                          <span>{conversation.other_user?.username || "Unknown"}</span>
+                          <small>{conversation.last_message?.body || "No messages yet"}</small>
+                        </div>
+                        {conversation.unread_count > 0 && (
+                          <span className="messages-unread-badge">{conversation.unread_count}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             ) : (

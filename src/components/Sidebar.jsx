@@ -204,7 +204,7 @@ export default function Sidebar() {
             >
               <span className="sidebar-icon">
                 {link.icon}
-                {showBadge && (
+                {showBadge && collapsed && (
                   <span className="sidebar-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>
                 )}
               </span>
