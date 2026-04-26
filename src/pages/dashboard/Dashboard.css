@@ -152,6 +152,10 @@
   margin-bottom: 1rem;
 }
 
+.db-stats-row-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .db-stat-card {
   display: flex;
   align-items: center;
@@ -290,6 +294,7 @@
 
 .db-hw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .db-hw-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.db-hw-grid-5 { grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
 .db-hw-stat { display: flex; flex-direction: column; align-items: center; padding: 1rem 0.5rem; border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.02); }
 .db-hw-val { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
 .db-hw-lbl { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-top: 0.35rem; }
@@ -472,4 +477,335 @@
   background: #16a34a;
   border-color: #16a34a;
   box-shadow: 0 2px 10px rgba(22, 163, 74, 0.4);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   NEW ANALYTICS COMPONENTS
+   ═══════════════════════════════════════════════════════ */
+
+/* Mini stat blocks (for "This Week at a Glance") */
+.db-highlight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.db-mini-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.85rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  min-height: 70px;
+}
+
+.db-mini-stat-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.db-mini-stat-lbl {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  line-height: 1.2;
+}
+
+[data-theme="dark"] .db-mini-stat {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Amount badge (for finance, recent payments) */
+.db-amount-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .db-amount-badge {
+  background: rgba(22, 163, 74, 0.18);
+}
+
+/* Deadline badge (instructor upcoming homework) */
+.db-deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .db-deadline-badge {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+}
+
+/* Score badge */
+.db-score-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .db-score-badge {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+}
+
+/* Leaderboard (Top Students) */
+.db-leaderboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.db-leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.db-leaderboard-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.db-leaderboard-item:first-child {
+  padding-top: 0;
+}
+
+.db-leaderboard-rank {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .db-leaderboard-item {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Course Progress Cards (Student) */
+.db-course-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.db-course-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.db-cp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.db-cp-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.db-cp-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.db-cp-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.db-cp-pct {
+  font-weight: 600;
+}
+
+.db-cp-score {
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+/* KPI Premium Cards with trend */
+.db-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.db-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.2rem 1.15rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.db-kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.3rem;
+}
+
+.db-kpi-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.db-kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.db-kpi-trend.up {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+.db-kpi-trend.down {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.db-kpi-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.db-kpi-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.db-kpi-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+[data-theme="dark"] .db-kpi-card {
+  background: linear-gradient(135deg, #1e1e1e 0%, #1a1a1a 100%);
+  border-color: #2a2a2a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 3-column grid for gauges */
+.db-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.db-grid-3 .db-card {
+  margin-bottom: 0;
+}
+
+.db-gauge-caption {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: -0.25rem;
+}
+
+/* Activity item (rich version with icons) */
+.db-activity-item-rich {
+  gap: 0.75rem;
+}
+
+.db-activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Responsive adjustments for new components */
+@media (max-width: 900px) {
+  .db-kpi-grid { grid-template-columns: 1fr 1fr; }
+  .db-grid-3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .db-highlight-grid { grid-template-columns: 1fr 1fr; }
+  .db-stats-row-3 { grid-template-columns: 1fr 1fr; }
+  .db-hw-grid-5 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .db-highlight-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .db-mini-stat { padding: 0.7rem 0.4rem; min-height: 60px; }
+  .db-mini-stat-val { font-size: 0.95rem; }
+  .db-mini-stat-lbl { font-size: 0.6rem; }
+  .db-stats-row-3 { grid-template-columns: 1fr 1fr; }
+  .db-hw-grid-5 { grid-template-columns: 1fr 1fr; }
+  .db-leaderboard-rank { min-width: 28px; font-size: 0.9rem; }
+  .db-amount-badge,
+  .db-deadline-badge,
+  .db-score-badge { font-size: 0.68rem; padding: 0.25rem 0.55rem; }
+  .db-kpi-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .db-kpi-card { padding: 0.9rem 0.85rem; }
+  .db-kpi-value { font-size: 1.2rem; }
+  .db-kpi-icon { width: 32px; height: 32px; }
+  .db-activity-icon { width: 28px; height: 28px; }
 }
