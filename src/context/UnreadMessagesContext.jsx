@@ -17,8 +17,7 @@ export function UnreadMessagesProvider({ children }) {
     try {
       const { data } = await api.get("/messages/unread-count/");
       setUnreadCount(data.total || 0);
-    } catch (error) {
-    }
+    } catch (error) {}
   }, [user]);
 
   useEffect(() => {

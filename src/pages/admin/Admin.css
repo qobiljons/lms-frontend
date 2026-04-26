@@ -478,6 +478,14 @@
   box-shadow: var(--shadow-sm);
 }
 
+.create-form-card-wide {
+  max-width: 880px;
+}
+
+.create-form-card-wide .sms-options {
+  max-height: 280px;
+}
+
 .create-form-header {
   text-align: center;
   margin-bottom: 1.25rem;
@@ -500,10 +508,13 @@
 .create-form-card .input-row {
   display: flex;
   gap: 0.6rem;
+  width: 100%;
 }
 
 .create-form-card .input-row .input-group {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .create-form-card .input-group {
@@ -1778,7 +1789,6 @@
   }
 }
 
-
 .table-actions {
   display: flex;
   align-items: center;
@@ -1864,7 +1874,6 @@
   border-color: rgba(0, 0, 0, 0.2);
 }
 
-
 .editing-row td {
   padding: 1rem !important;
 }
@@ -1921,7 +1930,6 @@
   margin-top: 0.25rem;
 }
 
-
 .logo-upload-area-admin {
   margin-top: 0.35rem;
 }
@@ -1944,7 +1952,6 @@
   background: rgba(22, 163, 74, 0.03);
 }
 
-
 .input-wrapper-textarea {
   align-items: flex-start !important;
 }
@@ -1960,7 +1967,6 @@
   font-family: inherit;
   padding: 0.3rem 0;
 }
-
 
 [data-theme="dark"] .action-btn-ghost:hover {
   background: rgba(34, 197, 94, 0.12);
@@ -1996,7 +2002,6 @@
     flex-wrap: wrap;
   }
 }
-
 
 .multi-select-container {
   max-height: 180px;
@@ -2054,7 +2059,6 @@
   background: rgba(22, 163, 74, 0.1);
 }
 
-
 .group-chips {
   display: flex;
   flex-wrap: wrap;
@@ -2079,14 +2083,16 @@
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-
 .sms-wrapper {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   background: var(--bg-secondary);
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
-
 
 .sms-chips {
   display: flex;
@@ -2148,7 +2154,6 @@
   color: #ef4444;
 }
 
-
 .sms-search {
   display: flex;
   align-items: center;
@@ -2209,7 +2214,6 @@
   background: rgba(22, 163, 74, 0.08);
 }
 
-
 .sms-options {
   max-height: 200px;
   overflow-y: auto;
@@ -2227,6 +2231,7 @@
   color: var(--text-primary);
   transition: background 0.12s ease;
   user-select: none;
+  min-width: 0;
 }
 
 .sms-option:hover {
@@ -2262,8 +2267,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
+  display: block;
 }
 
 .sms-option-check {
@@ -2278,7 +2284,6 @@
   font-size: 0.8rem;
   color: var(--text-muted);
 }
-
 
 [data-theme="dark"] .sms-wrapper {
   border-color: rgba(255, 255, 255, 0.1);
@@ -2333,7 +2338,6 @@
 [data-theme="dark"] .sms-option-avatar {
   border-color: rgba(255, 255, 255, 0.08);
 }
-
 
 .sms-options::-webkit-scrollbar,
 .sms-chips::-webkit-scrollbar {

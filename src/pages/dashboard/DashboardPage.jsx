@@ -12,7 +12,6 @@ import api from "../../api/axios";
 import PageTransition from "../../components/PageTransition";
 import "./Dashboard.css";
 
-
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
@@ -23,7 +22,6 @@ const contentVariants = {
   center: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } },
   exit: { opacity: 0, y: -12, transition: { duration: 0.2 } },
 };
-
 
 const COLORS = ["#16a34a", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899", "#f97316"];
 const STATUS_COLORS = {
@@ -59,7 +57,6 @@ const HW_STATUS_COLORS = {
   graded: "#16a34a",
 };
 
-
 const icons = {
   users: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   course: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>,
@@ -78,8 +75,11 @@ const icons = {
   trophy: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
   calendar: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
   target: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+  cal: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+  user: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  tag: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41 13.41 20.59a2 2 0 0 1-2.82 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
+  txt: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
 };
-
 
 const tabIcons = {
   overview: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
@@ -92,7 +92,6 @@ const tabIcons = {
   performance: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
   progress: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
 };
-
 
 function ChartTooltip({ active, payload, label, prefix = "", suffix = "" }) {
   if (!active || !payload?.length) return null;
@@ -109,7 +108,6 @@ function ChartTooltip({ active, payload, label, prefix = "", suffix = "" }) {
     </div>
   );
 }
-
 
 function AttendanceRing({ rate, size = 120, strokeWidth = 10 }) {
   const r = (size - strokeWidth) / 2;
@@ -137,7 +135,6 @@ function AttendanceRing({ rate, size = 120, strokeWidth = 10 }) {
   );
 }
 
-
 function StatCard({ icon, label, value, color, delay = 0, subtext }) {
   return (
     <motion.div className="db-stat-card" initial={{ opacity: 0, y: 20, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay, duration: 0.4 }} whileHover={{ y: -4, boxShadow: `0 8px 30px ${color}18` }}>
@@ -150,7 +147,6 @@ function StatCard({ icon, label, value, color, delay = 0, subtext }) {
     </motion.div>
   );
 }
-
 
 function QuickAction({ to, icon, label, desc, color, delay = 0 }) {
   return (
@@ -167,7 +163,6 @@ function QuickAction({ to, icon, label, desc, color, delay = 0 }) {
   );
 }
 
-
 function ChartCard({ title, children, delay = 0, className = "" }) {
   return (
     <motion.div className={`db-card ${className}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.5 }}>
@@ -176,7 +171,6 @@ function ChartCard({ title, children, delay = 0, className = "" }) {
     </motion.div>
   );
 }
-
 
 function StatusChip({ status }) {
   const color = STATUS_COLORS[status] || HW_STATUS_COLORS[status] || "#6b7280";
@@ -187,7 +181,6 @@ function StatusChip({ status }) {
     </span>
   );
 }
-
 
 function ProgressBar({ label, value, total, color, delay = 0 }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
@@ -205,7 +198,6 @@ function ProgressBar({ label, value, total, color, delay = 0 }) {
   );
 }
 
-
 function EmptyChart({ message }) {
   return (
     <div className="db-empty-state">
@@ -214,7 +206,6 @@ function EmptyChart({ message }) {
     </div>
   );
 }
-
 
 function TabBar({ tabs, activeTab, onTabChange }) {
   return (
@@ -240,7 +231,6 @@ function TabBar({ tabs, activeTab, onTabChange }) {
   );
 }
 
-
 function MiniStat({ label, value, color }) {
   return (
     <div className="db-mini-stat">
@@ -249,7 +239,6 @@ function MiniStat({ label, value, color }) {
     </div>
   );
 }
-
 
 function KpiCard({ icon, label, value, color, subtext, trend, delay = 0 }) {
   const trendUp = trend != null && trend >= 0;
@@ -272,7 +261,6 @@ function KpiCard({ icon, label, value, color, subtext, trend, delay = 0 }) {
     </motion.div>
   );
 }
-
 
 function GaugeRing({ rate, size = 110, strokeWidth = 9, label = "rate", color }) {
   const r = (size - strokeWidth) / 2;
@@ -300,7 +288,6 @@ function GaugeRing({ rate, size = 110, strokeWidth = 9, label = "rate", color })
   );
 }
 
-
 function Sparkline({ data, dataKey, color, height = 36 }) {
   if (!data || data.length === 0) return <div style={{ height }} />;
   return (
@@ -317,7 +304,6 @@ function Sparkline({ data, dataKey, color, height = 36 }) {
     </ResponsiveContainer>
   );
 }
-
 
 function KpiStripItem({ label, value, color, sparklineData, sparklineKey, trend, delay = 0 }) {
   const trendUp = trend != null && trend >= 0;
@@ -343,7 +329,6 @@ function KpiStripItem({ label, value, color, sparklineData, sparklineKey, trend,
     </motion.div>
   );
 }
-
 
 function DataTable({ columns, rows, emptyMessage = "No data" }) {
   if (!rows || rows.length === 0) return <EmptyChart message={emptyMessage} />;
@@ -371,6 +356,224 @@ function DataTable({ columns, rows, emptyMessage = "No data" }) {
   );
 }
 
+function AttendanceTable({ records, columns, pageSize = 15 }) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortKey, setSortKey] = useState("date");
+  const [sortDir, setSortDir] = useState("desc");
+  const [page, setPage] = useState(1);
+
+  const STATUS_FILTERS = [
+    { id: "all", label: "All", color: "#6b7280" },
+    { id: "attended", label: "Present", color: "#16a34a" },
+    { id: "attended_online", label: "Online", color: "#3b82f6" },
+    { id: "late", label: "Late", color: "#f59e0b" },
+    { id: "excused", label: "Excused", color: "#8b5cf6" },
+    { id: "absent", label: "Absent", color: "#ef4444" },
+  ];
+
+  const filtered = (records || []).filter((r) => {
+    if (statusFilter !== "all" && r.status !== statusFilter) return false;
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      (r.student_name || "").toLowerCase().includes(q) ||
+      (r.student || "").toLowerCase().includes(q) ||
+      (r.group || "").toLowerCase().includes(q) ||
+      (r.course || "").toLowerCase().includes(q) ||
+      (r.month || "").toLowerCase().includes(q) ||
+      (r.date_display || "").toLowerCase().includes(q)
+    );
+  });
+
+  const sorted = [...filtered].sort((a, b) => {
+    const av = a[sortKey];
+    const bv = b[sortKey];
+    if (av === bv) return 0;
+    const cmp = av > bv ? 1 : -1;
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageRows = sorted.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  const counts = STATUS_FILTERS.reduce((acc, f) => {
+    acc[f.id] = f.id === "all" ? (records || []).length : (records || []).filter(r => r.status === f.id).length;
+    return acc;
+  }, {});
+
+  const toggleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  };
+
+  return (
+    <div className="db-att-table-shell">
+      <div className="db-att-toolbar">
+        <div className="db-att-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input
+            type="text"
+            placeholder="Search by name, group, course, month..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          />
+          {search && (
+            <button className="db-att-search-clear" onClick={() => setSearch("")} aria-label="Clear search">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          )}
+        </div>
+        <div className="db-att-chips">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              className={`db-att-chip ${statusFilter === f.id ? "active" : ""}`}
+              onClick={() => { setStatusFilter(f.id); setPage(1); }}
+              style={statusFilter === f.id ? { borderColor: f.color, color: f.color, background: `${f.color}12` } : {}}
+            >
+              {f.id !== "all" && <span className="db-att-chip-dot" style={{ background: f.color }} />}
+              {f.label}
+              <span className="db-att-chip-count">{counts[f.id] ?? 0}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {sorted.length === 0 ? (
+        <EmptyChart message={records?.length === 0 ? "No attendance records yet" : "No records match your filter"} />
+      ) : (
+        <>
+          <div className="db-att-table-wrap">
+            <table className="db-att-table">
+              <thead>
+                <tr>
+                  {columns.map((c, i) => (
+                    <th
+                      key={i}
+                      style={{ textAlign: c.align || "left", width: c.width, cursor: c.sortKey ? "pointer" : "default" }}
+                      onClick={() => c.sortKey && toggleSort(c.sortKey)}
+                      className={c.sortKey ? "sortable" : ""}
+                    >
+                      <span className="db-att-th-inner">
+                        {c.icon && <span className="db-att-th-icon">{c.icon}</span>}
+                        {c.label}
+                        {c.sortKey && sortKey === c.sortKey && (
+                          <span className="db-att-sort-arrow">{sortDir === "asc" ? "▲" : "▼"}</span>
+                        )}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {pageRows.map((row, i) => (
+                  <motion.tr key={row.id ?? i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: Math.min(i * 0.02, 0.3) }}>
+                    <td className="db-att-row-num">{(safePage - 1) * pageSize + i + 1}</td>
+                    {columns.map((c, j) => (
+                      <td key={j} style={{ textAlign: c.align || "left" }}>
+                        {c.render ? c.render(row) : row[c.key]}
+                      </td>
+                    ))}
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPages > 1 && (
+            <div className="db-att-pagination">
+              <span className="db-att-page-info">
+                Showing {(safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, sorted.length)} of {sorted.length}
+              </span>
+              <div className="db-att-page-controls">
+                <button className="db-att-page-btn" disabled={safePage === 1} onClick={() => setPage(p => Math.max(1, p - 1))}>‹ Prev</button>
+                <span className="db-att-page-current">{safePage} / {totalPages}</span>
+                <button className="db-att-page-btn" disabled={safePage === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next ›</button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function StatusPill({ status }) {
+  const color = STATUS_COLORS[status] || "#6b7280";
+  const label = STATUS_LABELS[status] || status;
+  return (
+    <span className="db-att-pill" style={{ background: `${color}1f`, color }}>
+      {label}
+    </span>
+  );
+}
+
+function StatusStackBar({ data, total }) {
+  if (!total || total === 0) return <EmptyChart message="No attendance data yet" />;
+  const segments = data.filter(s => s.value > 0);
+  return (
+    <div className="db-stack-bar-wrap">
+      <div className="db-stack-bar">
+        {segments.map((s, i) => {
+          const pct = (s.value / total) * 100;
+          return (
+            <motion.div
+              key={i}
+              className="db-stack-segment"
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ delay: 0.2 + i * 0.08, duration: 0.7, ease: "easeOut" }}
+              style={{ background: s.color }}
+              title={`${s.name}: ${s.value} (${pct.toFixed(1)}%)`}
+            >
+              {pct >= 8 && (
+                <span className="db-stack-label">{s.value}</span>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
+      <div className="db-stack-legend">
+        {data.map((s, i) => (
+          <div key={i} className="db-stack-legend-item">
+            <span className="db-stack-legend-dot" style={{ background: s.color }} />
+            <span className="db-stack-legend-name">{s.name}</span>
+            <span className="db-stack-legend-val">{s.value}</span>
+            <span className="db-stack-legend-pct">{total > 0 ? ((s.value / total) * 100).toFixed(1) : 0}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AttendanceTimelineGrid({ data }) {
+  if (!data || data.length === 0) return <EmptyChart message="No attendance history yet" />;
+  return (
+    <div className="db-timeline-grid">
+      {data.map((d, i) => {
+        const color = STATUS_COLORS[d.raw_status] || (d.status === 1 ? "#16a34a" : "#ef4444");
+        return (
+          <motion.div
+            key={i}
+            className="db-timeline-cell"
+            style={{ background: color }}
+            title={`${d.date} — ${d.label}`}
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.015, duration: 0.25 }}
+          />
+        );
+      })}
+    </div>
+  );
+}
 
 function ActivityIcon({ type }) {
   const styles = {
@@ -385,7 +588,6 @@ function ActivityIcon({ type }) {
     </div>
   );
 }
-
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -459,7 +661,6 @@ export default function DashboardPage() {
             </div>
           </motion.div>
 
-
           {loading && (
             <div className="db-skeleton-grid">
               {[...Array(4)].map((_, i) => (
@@ -470,14 +671,12 @@ export default function DashboardPage() {
             </div>
           )}
 
-
           {error && !loading && (
             <motion.div className="db-error-card" variants={fadeUp}>
               <p>Failed to load dashboard data</p>
               <motion.button className="db-retry-btn" whileTap={{ scale: 0.95 }} onClick={fetchDashboard}>Try Again</motion.button>
             </motion.div>
           )}
-
 
           {!loading && !error && stats && user.role === "admin" && <AdminDashboard stats={stats} gridColor={gridColor} textColor={textColor} isDark={isDark} />}
           {!loading && !error && stats && user.role === "instructor" && <InstructorDashboard stats={stats} gridColor={gridColor} textColor={textColor} isDark={isDark} />}
@@ -488,21 +687,101 @@ export default function DashboardPage() {
   );
 }
 
-
-/* ═══════════════════════════════════════════════════════
-   ADMIN DASHBOARD
-   ═══════════════════════════════════════════════════════ */
-
 const adminTabs = [
-  { id: "overview", label: "Overview", icon: tabIcons.overview },
   { id: "analytics", label: "Analytics", icon: tabIcons.analytics },
   { id: "finance", label: "Finance", icon: tabIcons.finance },
   { id: "attendance", label: "Attendance", icon: tabIcons.attendance },
   { id: "actions", label: "Quick Actions", icon: tabIcons.actions },
 ];
 
+const RANGE_OPTIONS = [
+  { id: "1d", label: "1D" },
+  { id: "3d", label: "3D" },
+  { id: "7d", label: "7D" },
+  { id: "30d", label: "1M" },
+  { id: "90d", label: "3M" },
+  { id: "all", label: "ALL" },
+];
+
+function RevenueTrendChart({ gridColor, textColor, delay = 0 }) {
+  const [range, setRange] = useState("7d");
+  const [data, setData] = useState([]);
+  const [summary, setSummary] = useState({ total_revenue: 0, total_users: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    api.get(`/auth/dashboard/revenue-trend/?range=${range}`)
+      .then(({ data: res }) => {
+        if (cancelled) return;
+        setData(res.data || []);
+        setSummary(res.summary || { total_revenue: 0, total_users: 0 });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setData([]);
+      })
+      .finally(() => !cancelled && setLoading(false));
+    return () => { cancelled = true; };
+  }, [range]);
+
+  return (
+    <motion.div className="db-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.5 }}>
+      <div className="db-trend-header">
+        <div>
+          <h3 className="db-card-title" style={{ marginBottom: "0.2rem" }}>Revenue & User Growth</h3>
+          <div className="db-trend-summary">
+            <span><b style={{ color: "#16a34a" }}>${summary.total_revenue.toLocaleString()}</b> revenue</span>
+            <span className="db-trend-divider">·</span>
+            <span><b style={{ color: "#3b82f6" }}>{summary.total_users.toLocaleString()}</b> new users</span>
+          </div>
+        </div>
+        <div className="db-range-filter">
+          {RANGE_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              className={`db-range-btn ${range === opt.id ? "active" : ""}`}
+              onClick={() => setRange(opt.id)}
+              disabled={loading}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="db-chart-wrap" style={{ marginTop: "0.75rem" }}>
+        {loading ? (
+          <div className="db-empty-state" style={{ padding: "5rem 1rem" }}><p>Loading...</p></div>
+        ) : data.length === 0 ? (
+          <EmptyChart message="No data in this range" />
+        ) : (
+          <ResponsiveContainer width="100%" height={320}>
+            <ComposedChart data={data} margin={{ top: 10, right: 15, left: -5, bottom: 0 }}>
+              <defs>
+                <linearGradient id="gRevenueHero" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#16a34a" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+              <XAxis dataKey="period" tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+              <YAxis yAxisId="left" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `$${(v/1000).toFixed(1)}k` : `$${v}`} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip content={<ChartTooltip />} />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Bar yAxisId="right" dataKey="users" name="New Users" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={data.length > 20 ? 8 : 18} />
+              <Area yAxisId="left" type="monotone" dataKey="revenue" name="Revenue ($)" stroke="#16a34a" strokeWidth={2.5} fill="url(#gRevenueHero)" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 function AdminDashboard({ stats, gridColor, textColor, isDark }) {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("analytics");
   const charts = stats.charts || {};
   const attDist = (charts.attendance_status_dist || []).map(d => ({
     name: STATUS_LABELS[d.status] || d.status,
@@ -520,94 +799,30 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
     { name: "Admins", value: stats.users.admins, color: "#ef4444" },
   ].filter(d => d.value > 0);
 
-  // Combined revenue + user growth for composed chart
-  const combinedTrend = (charts.revenue_trend || []).map((r, i) => ({
-    week: r.week,
-    revenue: r.revenue,
-    users: charts.user_growth?.[i]?.count || 0,
-  }));
-
   return (
     <>
       <TabBar tabs={adminTabs} activeTab={activeTab} onTabChange={setActiveTab} />
       <AnimatePresence mode="wait">
-        {activeTab === "overview" && (
-          <motion.div key="overview" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            {/* Compact KPI strip with sparklines */}
-            <div className="db-kpi-strip">
-              <KpiStripItem
-                label="Total Revenue"
-                value={`$${parseFloat(stats.finance?.total_revenue || 0).toLocaleString()}`}
-                color="#16a34a"
-                sparklineData={charts.revenue_trend}
-                sparklineKey="revenue"
-                trend={stats.finance?.revenue_growth_pct}
-                delay={0.05}
-              />
-              <KpiStripItem
-                label="Total Users"
-                value={stats.users.total.toLocaleString()}
-                color="#3b82f6"
-                sparklineData={charts.user_growth}
-                sparklineKey="count"
-                delay={0.1}
-              />
-              <KpiStripItem
-                label="Sessions"
-                value={(stats.attendance?.sessions || 0).toLocaleString()}
-                color="#06b6d4"
-                sparklineData={charts.daily_sessions}
-                sparklineKey="count"
-                delay={0.15}
-              />
-              <KpiStripItem
-                label="Avg Score"
-                value={`${stats.homework?.avg_score || 0}pts`}
-                color="#ec4899"
-                delay={0.2}
-              />
-            </div>
+        {activeTab === "analytics" && (
+          <motion.div key="analytics" variants={contentVariants} initial="enter" animate="center" exit="exit">
+                        <RevenueTrendChart gridColor={gridColor} textColor={textColor} delay={0.05} />
 
-            {/* HERO CHART: Revenue + User Growth combined */}
-            <ChartCard title="Revenue & User Growth (8 weeks)" delay={0.3}>
-              <div className="db-chart-wrap">
-                <ResponsiveContainer width="100%" height={300}>
-                  <ComposedChart data={combinedTrend} margin={{ top: 10, right: 15, left: -5, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="gRevenueHero" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#16a34a" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-                    <XAxis dataKey="week" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                    <YAxis yAxisId="left" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `$${(v/1000).toFixed(1)}k` : `$${v}`} />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Bar yAxisId="right" dataKey="users" name="New Users" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={20} />
-                    <Area yAxisId="left" type="monotone" dataKey="revenue" name="Revenue ($)" stroke="#16a34a" strokeWidth={2.5} fill="url(#gRevenueHero)" />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </ChartCard>
-
-            {/* User Distribution + Top Instructors */}
-            <div className="db-grid-2">
-              <ChartCard title="User Distribution" delay={0.35}>
+                        <div className="db-grid-2">
+              <ChartCard title="User Distribution" delay={0.1}>
                 <div className="db-chart-wrap">
                   <ResponsiveContainer width="100%" height={260}>
                     <PieChart>
-                      <Pie data={userRoleDist} cx="50%" cy="50%" innerRadius={60} outerRadius={95} paddingAngle={2} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      <Pie data={userRoleDist} cx="50%" cy="50%" outerRadius={100} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} stroke="#fff" strokeWidth={2}>
                         {userRoleDist.map((d, i) => <Cell key={i} fill={d.color} />)}
                       </Pie>
                       <Tooltip content={<ChartTooltip />} />
+                      <Legend wrapperStyle={{ fontSize: 12 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
               </ChartCard>
 
-              <ChartCard title="Top Instructors by Students" delay={0.4}>
+              <ChartCard title="Top Instructors by Students" delay={0.15}>
                 {stats.top_instructors?.length > 0 ? (
                   <div className="db-chart-wrap">
                     <ResponsiveContainer width="100%" height={260}>
@@ -624,149 +839,27 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             </div>
 
-            {/* Activity Feed as professional data table */}
-            {stats.activity_feed?.length > 0 && (
-              <ChartCard title="Recent Platform Activity" delay={0.55}>
-                <DataTable
-                  columns={[
-                    { key: "type", label: "", width: "44px", render: (r) => <ActivityIcon type={r.type} /> },
-                    { key: "title", label: "Description", render: (r) => (
-                      <div>
-                        <div className="db-table-primary">{r.title}</div>
-                        <div className="db-table-secondary">{r.subtitle}</div>
-                      </div>
-                    )},
-                    { key: "date", label: "Date", align: "right", render: (r) => <span className="db-table-secondary">{r.date}</span> },
-                  ]}
-                  rows={stats.activity_feed}
-                />
-              </ChartCard>
-            )}
-          </motion.div>
-        )}
-
-        {activeTab === "analytics" && (
-          <motion.div key="analytics" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            <div className="db-grid-2">
-              <ChartCard title="Revenue Trend" delay={0.1}>
+                        <ChartCard title="Course Popularity" delay={0.2}>
+              {(charts.course_popularity || []).length > 0 ? (
                 <div className="db-chart-wrap">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={charts.revenue_trend || []} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="gRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#16a34a" stopOpacity={0.3} />
-                          <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                      <XAxis dataKey="week" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                      <Tooltip content={<ChartTooltip prefix="$" />} />
-                      <Area type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={2.5} fill="url(#gRevenue)" name="Revenue" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-
-              <ChartCard title="User Registrations" delay={0.15}>
-                <div className="db-chart-wrap">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={charts.user_growth || []} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                      <XAxis dataKey="week" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
+                  <ResponsiveContainer width="100%" height={Math.max(46 * (charts.course_popularity?.length || 1) + 40, 220)}>
+                    <BarChart data={charts.course_popularity} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} allowDecimals={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} width={120} />
                       <Tooltip content={<ChartTooltip />} />
-                      <Bar dataKey="count" name="New Users" fill="#3b82f6" radius={[6, 6, 0, 0]} barSize={28} />
+                      <Bar dataKey="students" name="Students" fill="#8b5cf6" radius={[0, 6, 6, 0]} barSize={22} label={{ position: "right", fill: textColor, fontSize: 11, fontWeight: 700 }} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              </ChartCard>
-            </div>
-
-            <div className="db-grid-2">
-              <ChartCard title="Course Popularity" delay={0.2}>
-                {(charts.course_popularity || []).length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={200}>
-                      <BarChart data={charts.course_popularity} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
-                        <XAxis type="number" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} width={90} />
-                        <Tooltip content={<ChartTooltip />} />
-                        <Bar dataKey="students" name="Students" fill="#8b5cf6" radius={[0, 6, 6, 0]} barSize={18} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No course data yet" />}
-              </ChartCard>
-
-              <ChartCard title="Daily Sessions (14 days)" delay={0.25}>
-                {(charts.daily_sessions || []).length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={200}>
-                      <AreaChart data={charts.daily_sessions} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="gDaily" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.3} />
-                            <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                        <XAxis dataKey="day" tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <Tooltip content={<ChartTooltip />} />
-                        <Area type="monotone" dataKey="count" stroke="#06b6d4" strokeWidth={2} fill="url(#gDaily)" name="Sessions" />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No session data yet" />}
-              </ChartCard>
-            </div>
-
+              ) : <EmptyChart message="No course data yet" />}
+            </ChartCard>
           </motion.div>
         )}
 
         {activeTab === "finance" && (
           <motion.div key="finance" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            {/* Compact KPI strip with sparklines */}
-            <div className="db-kpi-strip">
-              <KpiStripItem
-                label="Total Revenue"
-                value={`$${parseFloat(stats.finance?.total_revenue || 0).toLocaleString()}`}
-                color="#16a34a"
-                sparklineData={charts.revenue_trend}
-                sparklineKey="revenue"
-                delay={0.05}
-              />
-              <KpiStripItem
-                label="This Month"
-                value={`$${parseFloat(stats.finance?.monthly_revenue || 0).toLocaleString()}`}
-                color="#3b82f6"
-                trend={stats.finance?.revenue_growth_pct}
-                delay={0.1}
-              />
-              <KpiStripItem
-                label="Avg Payment"
-                value={`$${(stats.finance?.avg_payment || 0).toLocaleString()}`}
-                color="#f59e0b"
-                delay={0.15}
-              />
-              <KpiStripItem
-                label="Success Rate"
-                value={`${stats.finance?.payment_success_rate || 0}%`}
-                color="#14b8a6"
-                delay={0.2}
-              />
-              <KpiStripItem
-                label="Conversion"
-                value={`${stats.finance?.course_conversion_rate || 0}%`}
-                color="#ec4899"
-                delay={0.25}
-              />
-            </div>
-
-            {/* HERO: Revenue trend with cumulative line */}
-            <ChartCard title="Revenue Trend (8 weeks)" delay={0.3}>
+                        <ChartCard title="Revenue Trend (8 weeks)" delay={0.3}>
               <div className="db-chart-wrap">
                 <ResponsiveContainer width="100%" height={300}>
                   <ComposedChart data={(charts.revenue_trend || []).map((r, i, arr) => ({
@@ -826,8 +919,7 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             </div>
 
-            {/* Recent Payments — production data table */}
-            {stats.recent_payments?.length > 0 && (
+                        {stats.recent_payments?.length > 0 && (
               <ChartCard title="Recent Payments" delay={0.4}>
                 <DataTable
                   columns={[
@@ -851,60 +943,97 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
 
         {activeTab === "attendance" && (
           <motion.div key="attendance" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            {/* HERO: Daily sessions trend (14 days) */}
-            <ChartCard title="Daily Sessions Activity (14 days)" delay={0.05}>
-              {(charts.daily_sessions || []).length > 0 ? (
-                <div className="db-chart-wrap">
-                  <ResponsiveContainer width="100%" height={240}>
-                    <AreaChart data={charts.daily_sessions} margin={{ top: 10, right: 15, left: -10, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="gAttDaily" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.35} />
-                          <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
+                        <ChartCard title="Attendance Rate Trend (8 weeks)" delay={0.05}>
+              <div className="db-attendance-hero">
+                <div className="db-attendance-hero-stat">
+                  <span className="db-attendance-hero-value" style={{ color: stats.attendance?.rate >= 80 ? "#16a34a" : stats.attendance?.rate >= 60 ? "#f59e0b" : "#ef4444" }}>
+                    {stats.attendance?.rate || 0}%
+                  </span>
+                  <span className="db-attendance-hero-label">Overall Rate</span>
+                  <span className="db-attendance-hero-meta">
+                    {stats.attendance?.sessions || 0} sessions · {stats.attendance?.records || 0} records
+                  </span>
+                </div>
+                <div className="db-attendance-hero-chart">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <LineChart data={charts.attendance_rate_trend || []} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-                      <XAxis dataKey="day" tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <Tooltip content={<ChartTooltip />} />
-                      <Area type="monotone" dataKey="count" name="Sessions" stroke="#06b6d4" strokeWidth={2.5} fill="url(#gAttDaily)" />
-                    </AreaChart>
+                      <XAxis dataKey="week" tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} />
+                      <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                      <Tooltip content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null;
+                        const d = payload[0].payload;
+                        return (
+                          <div className="db-chart-tooltip">
+                            <span className="tooltip-label">{label}</span>
+                            <div className="tooltip-row">
+                              <span className="tooltip-dot" style={{ background: "#14b8a6" }} />
+                              <span className="tooltip-name">Rate</span>
+                              <span className="tooltip-val" style={{ color: "#14b8a6" }}>{d.rate}%</span>
+                            </div>
+                            <div className="tooltip-row">
+                              <span className="tooltip-dot" style={{ background: "#6b7280" }} />
+                              <span className="tooltip-name">Records</span>
+                              <span className="tooltip-val">{d.present}/{d.total}</span>
+                            </div>
+                          </div>
+                        );
+                      }} />
+                      <Line type="monotone" dataKey="rate" stroke="#14b8a6" strokeWidth={2.5} dot={{ fill: "#14b8a6", r: 3 }} activeDot={{ r: 5 }} />
+                    </LineChart>
                   </ResponsiveContainer>
                 </div>
-              ) : <EmptyChart message="No daily session data yet" />}
+              </div>
             </ChartCard>
 
-            {/* Per-group attendance breakdown — stacked bar chart */}
-            <ChartCard title="Attendance by Group (Stacked)" delay={0.1}>
-              {(charts.group_attendance_breakdown || []).length > 0 ? (
-                <div className="db-chart-wrap">
-                  <ResponsiveContainer width="100%" height={Math.max(60 * (charts.group_attendance_breakdown?.length || 1) + 60, 240)}>
-                    <BarChart data={charts.group_attendance_breakdown} layout="vertical" margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} width={120} />
-                      <Tooltip content={<ChartTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: 12 }} />
-                      <Bar dataKey="attended" name="Present" stackId="a" fill="#16a34a" />
-                      <Bar dataKey="online" name="Online" stackId="a" fill="#3b82f6" />
-                      <Bar dataKey="late" name="Late" stackId="a" fill="#f59e0b" />
-                      <Bar dataKey="excused" name="Excused" stackId="a" fill="#8b5cf6" />
-                      <Bar dataKey="absent" name="Absent" stackId="a" fill="#ef4444" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : <EmptyChart message="No group attendance data yet" />}
+                        <ChartCard title="Status Mix (Platform-wide)" delay={0.1}>
+              <StatusStackBar
+                data={[
+                  { name: "Present", value: (charts.attendance_status_dist || []).find(s => s.status === "attended")?.count || 0, color: "#16a34a" },
+                  { name: "Online", value: (charts.attendance_status_dist || []).find(s => s.status === "attended_online")?.count || 0, color: "#3b82f6" },
+                  { name: "Late", value: (charts.attendance_status_dist || []).find(s => s.status === "late")?.count || 0, color: "#f59e0b" },
+                  { name: "Excused", value: (charts.attendance_status_dist || []).find(s => s.status === "excused")?.count || 0, color: "#8b5cf6" },
+                  { name: "Absent", value: (charts.attendance_status_dist || []).find(s => s.status === "absent")?.count || 0, color: "#ef4444" },
+                ]}
+                total={stats.attendance?.records || 0}
+              />
             </ChartCard>
 
-            {/* Exact data table per group */}
-            <ChartCard title="Group Attendance Detail" delay={0.15}>
+                        <ChartCard title="Attendance Records" delay={0.15}>
+              <AttendanceTable
+                records={stats.attendance_records || []}
+                columns={[
+                  { key: "date", sortKey: "date", label: "Date", icon: icons.cal, render: (r) => (
+                    <span className="db-att-date">{r.date_display}</span>
+                  )},
+                  { key: "student_name", sortKey: "student_name", label: "Student", icon: icons.user, render: (r) => (
+                    <div>
+                      <div className="db-att-primary">{r.student_name}</div>
+                      <div className="db-att-secondary">@{r.student}</div>
+                    </div>
+                  )},
+                  { key: "group", sortKey: "group", label: "Group", icon: icons.tag, render: (r) => (
+                    <span className="db-att-secondary">{r.group || "—"}</span>
+                  )},
+                  { key: "course", sortKey: "course", label: "Course", icon: icons.txt, render: (r) => (
+                    <span className="db-att-secondary">{r.course || "—"}</span>
+                  )},
+                  { key: "status", sortKey: "status", label: "Status", icon: icons.tag, render: (r) => <StatusPill status={r.status} /> },
+                  { key: "month", sortKey: "month", label: "Month", icon: icons.cal, render: (r) => (
+                    <span className="db-att-month-pill">{r.month}</span>
+                  )},
+                ]}
+              />
+            </ChartCard>
+
+                        <ChartCard title="Group Attendance Leaderboard" delay={0.2}>
               <DataTable
                 emptyMessage="No group attendance data yet"
                 columns={[
                   { key: "name", label: "Group", render: (r) => (
                     <div>
                       <div className="db-table-primary">{r.name}</div>
-                      <div className="db-table-secondary">{r.students} student{r.students !== 1 ? "s" : ""} &middot; {r.sessions} session{r.sessions !== 1 ? "s" : ""}</div>
+                      <div className="db-table-secondary">{r.students} student{r.students !== 1 ? "s" : ""} · {r.sessions} session{r.sessions !== 1 ? "s" : ""}</div>
                     </div>
                   )},
                   { key: "attended", label: "Present", align: "right", render: (r) => <span style={{ color: "#16a34a", fontWeight: 700 }}>{r.attended}</span> },
@@ -913,7 +1042,7 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
                   { key: "excused", label: "Excused", align: "right", render: (r) => <span style={{ color: "#8b5cf6", fontWeight: 700 }}>{r.excused}</span> },
                   { key: "absent", label: "Absent", align: "right", render: (r) => <span style={{ color: "#ef4444", fontWeight: 700 }}>{r.absent}</span> },
                   { key: "rate", label: "Rate", align: "right", render: (r) => (
-                    <span className="db-table-amount" style={{ color: r.rate >= 80 ? "#16a34a" : r.rate >= 60 ? "#f59e0b" : "#ef4444" }}>{r.rate}%</span>
+                    <span className="db-rate-badge" style={{ background: `${r.rate >= 80 ? "#16a34a" : r.rate >= 60 ? "#f59e0b" : "#ef4444"}18`, color: r.rate >= 80 ? "#16a34a" : r.rate >= 60 ? "#f59e0b" : "#ef4444" }}>{r.rate}%</span>
                   )},
                 ]}
                 rows={charts.group_attendance_breakdown || []}
@@ -936,11 +1065,6 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
     </>
   );
 }
-
-
-/* ═══════════════════════════════════════════════════════
-   INSTRUCTOR DASHBOARD
-   ═══════════════════════════════════════════════════════ */
 
 const instructorTabs = [
   { id: "overview", label: "Overview", icon: tabIcons.overview },
@@ -990,8 +1114,7 @@ function InstructorDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             </div>
 
-            {/* Recent Submissions Needing Review */}
-            {stats.recent_submissions?.length > 0 && (
+                        {stats.recent_submissions?.length > 0 && (
               <ChartCard title="Submissions Awaiting Review" delay={0.4}>
                 <div className="db-activity-list">
                   {stats.recent_submissions.map((s, i) => (
@@ -1007,8 +1130,7 @@ function InstructorDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             )}
 
-            {/* Upcoming Homework Deadlines */}
-            {stats.upcoming_homework?.length > 0 && (
+                        {stats.upcoming_homework?.length > 0 && (
               <ChartCard title="Upcoming Deadlines" delay={0.5}>
                 <div className="db-activity-list">
                   {stats.upcoming_homework.map((hw, i) => (
@@ -1082,8 +1204,7 @@ function InstructorDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             </div>
 
-            {/* Top Students */}
-            {stats.top_students?.length > 0 && (
+                        {stats.top_students?.length > 0 && (
               <ChartCard title="Top Performing Students" delay={0.2}>
                 <div className="db-leaderboard">
                   {stats.top_students.map((s, i) => (
@@ -1104,41 +1225,120 @@ function InstructorDashboard({ stats, gridColor, textColor, isDark }) {
 
         {activeTab === "attendance" && (
           <motion.div key="attendance" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            <div className="db-grid-2">
-              <ChartCard title="Attendance by Session" delay={0.1}>
-                {(charts.attendance_by_session || []).length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={220}>
-                      <BarChart data={charts.attendance_by_session} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                        <XAxis dataKey="session" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <Tooltip content={<ChartTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Bar dataKey="present" name="Present" stackId="a" fill="#16a34a" />
-                        <Bar dataKey="absent" name="Absent" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                      </BarChart>
+                        <ChartCard title="Session Attendance Trend" delay={0.05}>
+              <div className="db-attendance-hero">
+                <div className="db-attendance-hero-stat">
+                  <span className="db-attendance-hero-value" style={{ color: stats.attendance?.rate >= 80 ? "#16a34a" : stats.attendance?.rate >= 60 ? "#f59e0b" : "#ef4444" }}>
+                    {stats.attendance?.rate || 0}%
+                  </span>
+                  <span className="db-attendance-hero-label">Your Rate</span>
+                  <span className="db-attendance-hero-meta">
+                    {stats.attendance?.sessions || 0} sessions · {stats.attendance?.records || 0} records
+                  </span>
+                </div>
+                <div className="db-attendance-hero-chart">
+                  {(charts.session_rate_trend || []).length > 0 ? (
+                    <ResponsiveContainer width="100%" height={180}>
+                      <LineChart data={charts.session_rate_trend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} />
+                        <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                        <Tooltip content={({ active, payload, label }) => {
+                          if (!active || !payload?.length) return null;
+                          const d = payload[0].payload;
+                          return (
+                            <div className="db-chart-tooltip">
+                              <span className="tooltip-label">{d.label} · {label}</span>
+                              <div className="tooltip-row">
+                                <span className="tooltip-dot" style={{ background: "#14b8a6" }} />
+                                <span className="tooltip-val" style={{ color: "#14b8a6" }}>{d.rate}%</span>
+                              </div>
+                            </div>
+                          );
+                        }} />
+                        <Line type="monotone" dataKey="rate" stroke="#14b8a6" strokeWidth={2.5} dot={{ fill: "#14b8a6", r: 3 }} activeDot={{ r: 5 }} />
+                      </LineChart>
                     </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No attendance sessions yet" />}
-              </ChartCard>
+                  ) : <EmptyChart message="No sessions yet" />}
+                </div>
+              </div>
+            </ChartCard>
 
-              <ChartCard title="Attendance Distribution" delay={0.15} className="db-card-center">
-                {attDist.length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={220}>
-                      <PieChart>
-                        <Pie data={attDist} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
-                          {attDist.map((d, i) => <Cell key={i} fill={d.color} />)}
-                        </Pie>
-                        <Tooltip content={<ChartTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No attendance data yet" />}
-              </ChartCard>
-            </div>
+                        <ChartCard title="Status Mix (Your Groups)" delay={0.1}>
+              <StatusStackBar
+                data={[
+                  { name: "Present", value: (charts.attendance_status_dist || []).find(s => s.status === "attended")?.count || 0, color: "#16a34a" },
+                  { name: "Online", value: (charts.attendance_status_dist || []).find(s => s.status === "attended_online")?.count || 0, color: "#3b82f6" },
+                  { name: "Late", value: (charts.attendance_status_dist || []).find(s => s.status === "late")?.count || 0, color: "#f59e0b" },
+                  { name: "Excused", value: (charts.attendance_status_dist || []).find(s => s.status === "excused")?.count || 0, color: "#8b5cf6" },
+                  { name: "Absent", value: (charts.attendance_status_dist || []).find(s => s.status === "absent")?.count || 0, color: "#ef4444" },
+                ]}
+                total={stats.attendance?.records || 0}
+              />
+            </ChartCard>
+
+                        <ChartCard title="Group Attendance Comparison" delay={0.15}>
+              {(charts.group_attendance || []).length > 0 ? (
+                <div className="db-chart-wrap">
+                  <ResponsiveContainer width="100%" height={Math.max(50 * (charts.group_attendance?.length || 1) + 60, 200)}>
+                    <BarChart data={charts.group_attendance} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
+                      <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} width={120} />
+                      <Tooltip content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null;
+                        const d = payload[0].payload;
+                        return (
+                          <div className="db-chart-tooltip">
+                            <span className="tooltip-label">{label}</span>
+                            <div className="tooltip-row">
+                              <span className="tooltip-dot" style={{ background: "#14b8a6" }} />
+                              <span className="tooltip-val" style={{ color: "#14b8a6" }}>{d.rate}%</span>
+                            </div>
+                            <div className="tooltip-row">
+                              <span className="tooltip-name">Records</span>
+                              <span className="tooltip-val">{d.present}/{d.total}</span>
+                            </div>
+                          </div>
+                        );
+                      }} />
+                      <Bar dataKey="rate" radius={[0, 6, 6, 0]} barSize={22} label={{ position: "right", fill: textColor, fontSize: 11, fontWeight: 700, formatter: (v) => `${v}%` }}>
+                        {(charts.group_attendance || []).map((g, i) => (
+                          <Cell key={i} fill={g.rate >= 80 ? "#16a34a" : g.rate >= 60 ? "#f59e0b" : "#ef4444"} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : <EmptyChart message="No group attendance data yet" />}
+            </ChartCard>
+
+                        <ChartCard title="Attendance Records" delay={0.2}>
+              <AttendanceTable
+                records={stats.attendance_records || []}
+                columns={[
+                  { key: "date", sortKey: "date", label: "Date", icon: icons.cal, render: (r) => (
+                    <span className="db-att-date">{r.date_display}</span>
+                  )},
+                  { key: "student_name", sortKey: "student_name", label: "Student", icon: icons.user, render: (r) => (
+                    <div>
+                      <div className="db-att-primary">{r.student_name}</div>
+                      <div className="db-att-secondary">@{r.student}</div>
+                    </div>
+                  )},
+                  { key: "group", sortKey: "group", label: "Group", icon: icons.tag, render: (r) => (
+                    <span className="db-att-secondary">{r.group || "—"}</span>
+                  )},
+                  { key: "course", sortKey: "course", label: "Course", icon: icons.txt, render: (r) => (
+                    <span className="db-att-secondary">{r.course || "—"}</span>
+                  )},
+                  { key: "status", sortKey: "status", label: "Status", icon: icons.tag, render: (r) => <StatusPill status={r.status} /> },
+                  { key: "month", sortKey: "month", label: "Month", icon: icons.cal, render: (r) => (
+                    <span className="db-att-month-pill">{r.month}</span>
+                  )},
+                ]}
+              />
+            </ChartCard>
           </motion.div>
         )}
 
@@ -1188,11 +1388,6 @@ function InstructorDashboard({ stats, gridColor, textColor, isDark }) {
   );
 }
 
-
-/* ═══════════════════════════════════════════════════════
-   STUDENT DASHBOARD
-   ═══════════════════════════════════════════════════════ */
-
 const studentTabs = [
   { id: "overview", label: "Overview", icon: tabIcons.overview },
   { id: "progress", label: "Progress", icon: tabIcons.progress },
@@ -1241,8 +1436,7 @@ function StudentDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             </div>
 
-            {/* Upcoming Homework */}
-            {stats.upcoming_homework?.length > 0 && (
+                        {stats.upcoming_homework?.length > 0 && (
               <ChartCard title="Upcoming Homework" delay={0.4}>
                 <div className="db-activity-list">
                   {stats.upcoming_homework.map((hw, i) => (
@@ -1262,8 +1456,7 @@ function StudentDashboard({ stats, gridColor, textColor, isDark }) {
 
         {activeTab === "progress" && (
           <motion.div key="progress" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            {/* Course Progress */}
-            <ChartCard title="Course Progress" delay={0.1}>
+                        <ChartCard title="Course Progress" delay={0.1}>
               {(stats.course_progress || []).length > 0 ? (
                 <div className="db-course-progress-list">
                   {stats.course_progress.map((cp, i) => (
@@ -1291,8 +1484,7 @@ function StudentDashboard({ stats, gridColor, textColor, isDark }) {
               ) : <EmptyChart message="No courses enrolled yet" />}
             </ChartCard>
 
-            {/* Score Distribution */}
-            <ChartCard title="Score Distribution" delay={0.2}>
+                        <ChartCard title="Score Distribution" delay={0.2}>
               {(charts.score_distribution || []).some(d => d.count > 0) ? (
                 <div className="db-chart-wrap">
                   <ResponsiveContainer width="100%" height={200}>
@@ -1316,71 +1508,118 @@ function StudentDashboard({ stats, gridColor, textColor, isDark }) {
 
         {activeTab === "attendance" && (
           <motion.div key="attendance" variants={contentVariants} initial="enter" animate="center" exit="exit">
-            <div className="db-grid-2">
-              <ChartCard title="Attendance Breakdown" delay={0.1} className="db-card-center">
-                {attDist.length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={220}>
-                      <PieChart>
-                        <Pie data={attDist} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
-                          {attDist.map((d, i) => <Cell key={i} fill={d.color} />)}
-                        </Pie>
-                        <Tooltip content={<ChartTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
+                        <ChartCard title="Your Attendance" delay={0.05}>
+              <div className="db-attendance-hero">
+                <div className="db-attendance-hero-stat" style={{ flexShrink: 0 }}>
+                  <AttendanceRing rate={stats.attendance?.rate || 0} size={140} strokeWidth={11} />
+                  <div className="db-attendance-hero-meta" style={{ textAlign: "center", marginTop: "0.25rem" }}>
+                    {stats.attendance?.present || 0} of {stats.attendance?.total || 0} sessions present
                   </div>
-                ) : <EmptyChart message="No attendance records yet" />}
-              </ChartCard>
+                </div>
+                <div className="db-attendance-hero-chart">
+                  <div className="db-timeline-header">
+                    <span className="db-timeline-title">Last 30 Sessions</span>
+                    <div className="db-timeline-key">
+                      <span><span className="db-timeline-dot" style={{ background: "#16a34a" }} /> Present</span>
+                      <span><span className="db-timeline-dot" style={{ background: "#3b82f6" }} /> Online</span>
+                      <span><span className="db-timeline-dot" style={{ background: "#f59e0b" }} /> Late</span>
+                      <span><span className="db-timeline-dot" style={{ background: "#8b5cf6" }} /> Excused</span>
+                      <span><span className="db-timeline-dot" style={{ background: "#ef4444" }} /> Absent</span>
+                    </div>
+                  </div>
+                  <AttendanceTimelineGrid data={charts.attendance_timeline || []} />
+                  {(charts.student_rate_trend || []).some(d => d.has_data) && (
+                    <div style={{ marginTop: "0.75rem" }}>
+                      <ResponsiveContainer width="100%" height={120}>
+                        <AreaChart data={charts.student_rate_trend} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="gStudentRate" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#14b8a6" stopOpacity={0.3} />
+                              <stop offset="100%" stopColor="#14b8a6" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                          <XAxis dataKey="week" tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} />
+                          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                          <Tooltip content={<ChartTooltip suffix="%" />} />
+                          <Area type="monotone" dataKey="rate" name="Weekly Rate" stroke="#14b8a6" strokeWidth={2} fill="url(#gStudentRate)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </ChartCard>
 
-              <ChartCard title="Attendance Timeline" delay={0.15}>
-                {(charts.attendance_timeline || []).length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={220}>
-                      <BarChart data={charts.attendance_timeline} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                        <XAxis dataKey="date" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} domain={[0, 1]} ticks={[0, 1]} tickFormatter={v => v === 1 ? "Present" : "Absent"} />
-                        <Tooltip content={({ active, payload, label }) => {
-                          if (!active || !payload?.length) return null;
-                          const d = payload[0].payload;
-                          return (
-                            <div className="db-chart-tooltip">
-                              <span className="tooltip-label">{label}</span>
-                              <div className="tooltip-row">
-                                <span className="tooltip-dot" style={{ background: d.status ? "#16a34a" : "#ef4444" }} />
-                                <span className="tooltip-val" style={{ color: d.status ? "#16a34a" : "#ef4444" }}>{d.label}</span>
-                              </div>
+                        <ChartCard title="Your Status Breakdown" delay={0.1}>
+              <StatusStackBar
+                data={[
+                  { name: "Present", value: (charts.attendance_status_dist || []).find(s => s.status === "attended")?.count || 0, color: "#16a34a" },
+                  { name: "Online", value: (charts.attendance_status_dist || []).find(s => s.status === "attended_online")?.count || 0, color: "#3b82f6" },
+                  { name: "Late", value: (charts.attendance_status_dist || []).find(s => s.status === "late")?.count || 0, color: "#f59e0b" },
+                  { name: "Excused", value: (charts.attendance_status_dist || []).find(s => s.status === "excused")?.count || 0, color: "#8b5cf6" },
+                  { name: "Absent", value: (charts.attendance_status_dist || []).find(s => s.status === "absent")?.count || 0, color: "#ef4444" },
+                ]}
+                total={stats.attendance?.total || 0}
+              />
+            </ChartCard>
+
+                        {(charts.course_attendance || []).length > 0 && (
+              <ChartCard title="Attendance by Course" delay={0.15}>
+                <div className="db-chart-wrap">
+                  <ResponsiveContainer width="100%" height={Math.max(50 * (charts.course_attendance?.length || 1) + 40, 180)}>
+                    <BarChart data={charts.course_attendance} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
+                      <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} width={130} />
+                      <Tooltip content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null;
+                        const d = payload[0].payload;
+                        return (
+                          <div className="db-chart-tooltip">
+                            <span className="tooltip-label">{label}</span>
+                            <div className="tooltip-row">
+                              <span className="tooltip-dot" style={{ background: "#14b8a6" }} />
+                              <span className="tooltip-val" style={{ color: "#14b8a6" }}>{d.rate}%</span>
                             </div>
-                          );
-                        }} />
-                        <Bar dataKey="status" name="Status" radius={[4, 4, 0, 0]} barSize={24}>
-                          {(charts.attendance_timeline || []).map((d, i) => (
-                            <Cell key={i} fill={d.status === 1 ? "#16a34a" : "#ef4444"} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No attendance history yet" />}
-              </ChartCard>
-            </div>
-
-            {stats.recent_attendance?.length > 0 && (
-              <ChartCard title="Recent Attendance" delay={0.2}>
-                <div className="db-activity-list">
-                  {stats.recent_attendance.map((r, i) => (
-                    <motion.div className="db-activity-item" key={i} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 + i * 0.06 }}>
-                      <div className="db-activity-left">
-                        <span className="db-activity-title">{r.group}</span>
-                        <span className="db-activity-meta">{r.course} &middot; {r.date}</span>
-                      </div>
-                      <StatusChip status={r.status} />
-                    </motion.div>
-                  ))}
+                            <div className="tooltip-row">
+                              <span className="tooltip-name">Records</span>
+                              <span className="tooltip-val">{d.present}/{d.total}</span>
+                            </div>
+                          </div>
+                        );
+                      }} />
+                      <Bar dataKey="rate" radius={[0, 6, 6, 0]} barSize={22} label={{ position: "right", fill: textColor, fontSize: 11, fontWeight: 700, formatter: (v) => `${v}%` }}>
+                        {(charts.course_attendance || []).map((c, i) => (
+                          <Cell key={i} fill={c.rate >= 80 ? "#16a34a" : c.rate >= 60 ? "#f59e0b" : "#ef4444"} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </ChartCard>
             )}
+
+                        <ChartCard title="My Attendance Records" delay={0.2}>
+              <AttendanceTable
+                records={stats.attendance_records || []}
+                columns={[
+                  { key: "date", sortKey: "date", label: "Date", icon: icons.cal, render: (r) => (
+                    <span className="db-att-date">{r.date_display}</span>
+                  )},
+                  { key: "group", sortKey: "group", label: "Group", icon: icons.tag, render: (r) => (
+                    <span className="db-att-primary">{r.group || "—"}</span>
+                  )},
+                  { key: "course", sortKey: "course", label: "Course", icon: icons.txt, render: (r) => (
+                    <span className="db-att-secondary">{r.course || "—"}</span>
+                  )},
+                  { key: "status", sortKey: "status", label: "Status", icon: icons.tag, render: (r) => <StatusPill status={r.status} /> },
+                  { key: "month", sortKey: "month", label: "Month", icon: icons.cal, render: (r) => (
+                    <span className="db-att-month-pill">{r.month}</span>
+                  )},
+                ]}
+              />
+            </ChartCard>
           </motion.div>
         )}
 

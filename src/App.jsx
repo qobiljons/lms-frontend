@@ -30,6 +30,7 @@ import PaymentsPage from "./pages/payments/PaymentsPage";
 import AttendanceManagePage from "./pages/attendance/AttendanceManagePage";
 import AttendanceMyPage from "./pages/attendance/AttendanceMyPage";
 import MessagingPage from "./pages/messaging/MessagingPage";
+import TutorPage from "./pages/tutor/TutorPage";
 
 function App() {
   const location = useLocation();
@@ -147,6 +148,14 @@ function App() {
               element={
                 <RoleRoute roles={["student"]}>
                   <AttendanceMyPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/tutor"
+              element={
+                <RoleRoute roles={["student"]}>
+                  <TutorPage />
                 </RoleRoute>
               }
             />

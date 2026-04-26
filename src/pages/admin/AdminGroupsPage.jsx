@@ -29,7 +29,6 @@ function generatePageNumbers(current, total) {
   return pages;
 }
 
-
 function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, placeholder, avatarFn }) {
   const [query, setQuery] = useState("");
   const inputRef = useRef(null);
@@ -52,7 +51,7 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
 
   return (
     <div className="sms-wrapper" ref={containerRef}>
-      
+
       {selectedItems.length > 0 && (
         <div className="sms-chips">
           {selectedItems.map((item) => (
@@ -89,7 +88,6 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
         </div>
       )}
 
-      
       <div className="sms-search">
         <svg className="sms-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8" />
@@ -118,7 +116,6 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
         <span className="sms-count">{selected.length} selected</span>
       </div>
 
-      
       <div className="sms-options">
         {filtered.length === 0 ? (
           <span className="sms-empty">
@@ -156,7 +153,6 @@ function SearchableMultiSelect({ items, selected, onToggle, labelFn, emptyText, 
     </div>
   );
 }
-
 
 export default function AdminGroupsPage() {
   const [groups, setGroups] = useState([]);
@@ -561,7 +557,7 @@ export default function AdminGroupsPage() {
             </motion.div>
           ) : (
             <motion.div key="create" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }} className="create-user-section">
-              <motion.div className="create-form-card glass glow-border" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <motion.div className="create-form-card create-form-card-wide glass glow-border" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                 <div className="create-form-header">
                   <h2>New Group</h2>
                   <p>Create a group to assign an instructor, students, and courses.</p>

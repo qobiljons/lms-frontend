@@ -162,8 +162,7 @@ export default function MessagingPage() {
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
-    } catch (error) {
-    }
+    } catch (error) {}
   }, []);
 
   const handleIncomingMessage = useCallback(
@@ -260,10 +259,8 @@ export default function MessagingPage() {
       await api.post(`/messages/direct/${targetUser.id}/read/`);
       await loadDirectConversations();
       refreshUnreadCount();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
   const selectGroupConversation = async (conversation) => {
     setMode("group");
     setSelectedGroup(conversation);
@@ -275,10 +272,8 @@ export default function MessagingPage() {
       await api.post(`/messages/groups/${conversation.group}/read/`);
       await loadGroupConversations();
       refreshUnreadCount();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
   const sendMessageFallback = async (text) => {
     if (mode === "direct" && selectedDirectUser?.id) {
       const { data } = await api.post(`/messages/direct/${selectedDirectUser.id}/`, { body: text });

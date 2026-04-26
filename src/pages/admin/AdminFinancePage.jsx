@@ -165,7 +165,6 @@ export default function AdminFinancePage() {
           </div>
         </div>
 
-        
         {stats && (
           <motion.div
             style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}
@@ -202,7 +201,6 @@ export default function AdminFinancePage() {
           </motion.div>
         )}
 
-        
         <div className="user-tabs">
           <button className={`user-tab ${activeTab === "purchases" ? "active" : ""}`} onClick={() => setActiveTab("purchases")}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
@@ -218,7 +216,6 @@ export default function AdminFinancePage() {
 
         <AnimatePresence mode="wait">
 
-          
           {activeTab === "purchases" && (
             <motion.div key="purchases" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               <div className="user-toolbar">
@@ -328,7 +325,6 @@ export default function AdminFinancePage() {
             </motion.div>
           )}
 
-          
           {activeTab === "transactions" && (
             <motion.div key="transactions" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}>
               <div className="user-toolbar">

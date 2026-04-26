@@ -26,7 +26,7 @@ export default function CourseDetailPage() {
       try {
         const { data } = await api.get(`/courses/${slug}/`);
         setCourse(data);
-        
+
         try {
           const lessonsRes = await api.get(`/lessons/?course=${data.id}&page_size=1`);
           setLessonCount(lessonsRes.data.count || 0);
@@ -46,13 +46,13 @@ export default function CourseDetailPage() {
 
   const handlePurchase = async () => {
     if (!course) return;
-    
+
     setPurchasing(true);
     try {
       const { data } = await api.post("/payments/create-checkout/", {
         course_id: course.id,
       });
-      
+
       if (data.url) {
         window.location.href = data.url;
       }
@@ -87,14 +87,13 @@ export default function CourseDetailPage() {
   return (
     <PageTransition>
       <div className="course-detail-page">
-        
+
         <nav className="breadcrumb">
           <Link to="/courses" className="breadcrumb-link">Courses</Link>
           <span className="breadcrumb-separator">/</span>
           <span className="breadcrumb-current">{course.title}</span>
         </nav>
 
-        
         <motion.div
           className="course-hero"
           initial={{ opacity: 0, y: 20 }}
@@ -111,7 +110,7 @@ export default function CourseDetailPage() {
                 {course.description && (
                   <p className="course-hero-description">{course.description}</p>
                 )}
-                
+
                 <div className="course-meta">
                   <span className="course-meta-item">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -120,7 +119,7 @@ export default function CourseDetailPage() {
                     </svg>
                     {lessonCount} Lesson{lessonCount !== 1 ? "s" : ""}
                   </span>
-                  
+
                   <span className="course-meta-item">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -128,11 +127,13 @@ export default function CourseDetailPage() {
                     {new Date(course.created_at).toLocaleDateString()}
                   </span>
 
-                  <span className={`course-price-badge ${isFree ? 'free' : 'paid'}`}>
-                    {isFree ? 'Free' : `$${Number(course.price).toFixed(2)}`}
-                  </span>
+                  {!isAdmin && !isInstructor && !course.is_purchased && (
+                    <span className={`course-price-badge ${isFree ? 'free' : 'paid'}`}>
+                      {isFree ? 'Free' : `$${Number(course.price).toFixed(2)}`}
+                    </span>
+                  )}
 
-                  {!isFree && course.is_purchased && (
+                  {!isAdmin && !isInstructor && !isFree && course.is_purchased && (
                     <span className="course-status-badge purchased">
                       ✓ Owned
                     </span>
@@ -175,7 +176,6 @@ export default function CourseDetailPage() {
           </div>
         </motion.div>
 
-        
         <motion.div
           className="course-stats-grid"
           initial={{ opacity: 0, y: 20 }}
@@ -220,7 +220,6 @@ export default function CourseDetailPage() {
           </div>
         </motion.div>
 
-        
         <motion.div
           className="course-about card"
           initial={{ opacity: 0, y: 20 }}
@@ -231,7 +230,7 @@ export default function CourseDetailPage() {
           <p>
             {course.description || "This course provides comprehensive learning materials to help you master the subject."}
           </p>
-          
+
           {lessonCount > 0 && (
             <div className="course-cta">
               <p>Ready to start learning?</p>
@@ -255,7 +254,6 @@ export default function CourseDetailPage() {
           )}
         </motion.div>
 
-        
         <motion.div
           className="course-navigation"
           initial={{ opacity: 0 }}

@@ -62,9 +62,9 @@ export function AuthProvider({ children }) {
       if (tokens?.refresh) {
         await api.post("/auth/logout/", { refresh: tokens.refresh });
       }
-    } catch {
+    } catch  {
+      clearAuth();
     }
-    clearAuth();
   };
 
   const value = { user, loading, login, signup, logout };

@@ -93,8 +93,7 @@ export default function ProfilePage() {
         bio: data.bio || "",
       });
       if (data.avatar) setAvatarPreview(getAvatarUrl(data));
-    } catch {
-    }
+    } catch {}
   };
 
   const handleUserChange = (e) =>

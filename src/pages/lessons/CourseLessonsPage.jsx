@@ -83,7 +83,7 @@ export default function CourseLessonsPage() {
   return (
     <PageTransition>
       <div className="course-lessons-page">
-        
+
         <nav className="breadcrumb">
           <Link to="/courses" className="breadcrumb-link">Courses</Link>
           <span className="breadcrumb-separator">/</span>
@@ -94,7 +94,6 @@ export default function CourseLessonsPage() {
           <span className="breadcrumb-current">Lessons</span>
         </nav>
 
-        
         <motion.div
           className="course-lessons-header"
           initial={{ opacity: 0, y: 20 }}
@@ -130,7 +129,6 @@ export default function CourseLessonsPage() {
           </div>
         </motion.div>
 
-        
         <div className="lessons-container">
           <div className="lessons-header">
             <h2>Course Lessons</h2>
@@ -156,8 +154,8 @@ export default function CourseLessonsPage() {
               </svg>
               <h3>No Lessons Yet</h3>
               <p>
-                {isInstructor 
-                  ? "Get started by creating your first lesson." 
+                {isInstructor
+                  ? "Get started by creating your first lesson."
                   : "Lessons will appear here once they're added to this course."}
               </p>
               {isInstructor && (
@@ -194,9 +192,9 @@ export default function CourseLessonsPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <h3 className="lesson-title">{lesson.title}</h3>
-                  
+
                   {lesson.content && (
                     <p className="lesson-preview">
                       {lesson.content.replace(/<[^>]*>/g, '').substring(0, 120)}...
@@ -205,10 +203,10 @@ export default function CourseLessonsPage() {
 
                   <div className="lesson-card-footer">
                     <span className="lesson-date">
-                      {new Date(lesson.created_at).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
+                      {new Date(lesson.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
                       })}
                     </span>
                     <span className="lesson-cta">

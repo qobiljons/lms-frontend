@@ -4,9 +4,9 @@ export function getAvatarUrl(profile) {
   try {
     const url = new URL(raw);
     if (url.pathname.startsWith("/media/")) return url.pathname;
-  } catch {
+  } catch  {
+    return raw;
   }
-  return raw;
 }
 
 export function avatarErrorHandler(profile) {

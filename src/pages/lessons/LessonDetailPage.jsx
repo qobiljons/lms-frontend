@@ -22,7 +22,7 @@ export default function LessonDetailPage() {
       try {
         const { data } = await api.get(`/lessons/${lessonId}/`);
         setLesson(data);
-        
+
         if (user?.role === "student" || user?.role === "instructor" || user?.role === "admin") {
           fetchHomework();
         }
@@ -76,7 +76,7 @@ export default function LessonDetailPage() {
   return (
     <PageTransition>
       <div className="lesson-detail-page">
-        
+
         <nav className="breadcrumb">
           <Link to="/courses" className="breadcrumb-link">Courses</Link>
           <span className="breadcrumb-separator">/</span>
@@ -91,7 +91,6 @@ export default function LessonDetailPage() {
           <span className="breadcrumb-current">{lesson.title}</span>
         </nav>
 
-        
         <motion.div
           className="lesson-header"
           initial={{ opacity: 0, y: 20 }}
@@ -119,7 +118,6 @@ export default function LessonDetailPage() {
           </div>
         </motion.div>
 
-        
         {embedUrl && (
           <motion.div
             className="lesson-video-section card"
@@ -139,7 +137,6 @@ export default function LessonDetailPage() {
           </motion.div>
         )}
 
-        
         <motion.div
           className="lesson-content-section card"
           initial={{ opacity: 0, y: 20 }}
@@ -150,7 +147,6 @@ export default function LessonDetailPage() {
           <div className="lesson-content" dangerouslySetInnerHTML={{ __html: lesson.content || "<p>No content available.</p>" }} />
         </motion.div>
 
-        
         {homework.length > 0 && (
           <motion.div
             className="lesson-homework-section card"
@@ -196,7 +192,6 @@ export default function LessonDetailPage() {
           </motion.div>
         )}
 
-        
         <motion.div
           className="lesson-navigation"
           initial={{ opacity: 0 }}

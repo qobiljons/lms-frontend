@@ -4,7 +4,6 @@
   padding: 2.5rem 1.5rem;
 }
 
-
 .member-profile-loading {
   display: flex;
   flex-direction: column;
@@ -31,7 +30,6 @@
 @keyframes mpSpin {
   to { transform: rotate(360deg); }
 }
-
 
 .member-profile-error {
   text-align: center;
@@ -86,7 +84,6 @@
   background: rgba(22, 163, 74, 0.04);
 }
 
-
 .member-profile-nav {
   margin-bottom: 1.5rem;
 }
@@ -105,7 +102,6 @@
 .member-profile-back:hover {
   color: var(--accent);
 }
-
 
 .member-profile-hero {
   display: flex;
@@ -178,7 +174,6 @@
   letter-spacing: 0.04em;
 }
 
-
 .member-profile-details {
   display: flex;
   flex-direction: column;
@@ -206,7 +201,6 @@
 .member-profile-card-header h3 svg {
   color: var(--accent);
 }
-
 
 .member-profile-fields {
   display: flex;
@@ -246,14 +240,12 @@
   color: var(--text-primary);
 }
 
-
 .member-profile-bio {
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
 }
-
 
 .member-profile-groups {
   display: flex;
@@ -273,7 +265,6 @@
   font-weight: 600;
   border: 1px solid rgba(22, 163, 74, 0.15);
 }
-
 
 @media (max-width: 640px) {
   .member-profile-page {
@@ -296,7 +287,6 @@
     gap: 0.25rem;
   }
 }
-
 
 [data-theme="dark"] .member-profile-error {
   background: #161616;

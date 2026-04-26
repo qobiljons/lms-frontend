@@ -151,7 +151,6 @@ export default function BillingPage() {
           </motion.div>
         )}
 
-        
         {hasActiveSub && (
           <motion.div
             className="subscription-card"
@@ -186,7 +185,6 @@ export default function BillingPage() {
           </motion.div>
         )}
 
-        
         {!hasActiveSub && plans.length > 0 && (
           <motion.div
             className="plans-section"
@@ -241,7 +239,6 @@ export default function BillingPage() {
           </div>
         )}
 
-        
         {payments.length > 0 && (
           <motion.div
             className="payment-history"

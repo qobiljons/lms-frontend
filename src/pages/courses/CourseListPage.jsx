@@ -17,6 +17,8 @@ const bookIcon = (
 export default function CourseListPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const isInstructor = user?.role === "instructor";
+  const isStaff = isAdmin || isInstructor;
   const navigate = useNavigate();
 
   const [courses, setCourses] = useState([]);
@@ -233,7 +235,7 @@ export default function CourseListPage() {
                         whileHover={{ y: -6, transition: { duration: 0.2 } }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        
+
                         <div className="course-card-v2-banner" style={course.logo ? {} : { background: gradient }}>
                           {course.logo ? (
                             <img src={course.logo} alt={course.title} className="course-card-v2-banner-img" />
@@ -242,23 +244,25 @@ export default function CourseListPage() {
                               {bookIcon}
                             </div>
                           )}
-                          
+
                           <div className="course-card-v2-banner-badge">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>
                             {count} lesson{count !== 1 ? "s" : ""}
                           </div>
-                          
-                          <div className="course-card-v2-price-badge" style={{
-                            position: "absolute", top: "0.5rem", right: "0.5rem",
-                            padding: "0.2rem 0.6rem", borderRadius: 8,
-                            fontSize: "0.75rem", fontWeight: 700,
-                            background: course.price > 0 ? "rgba(0,0,0,0.7)" : "rgba(22,163,74,0.85)",
-                            color: "#fff", backdropFilter: "blur(8px)",
-                          }}>
-                            {course.price > 0 ? `$${Number(course.price).toFixed(2)}` : "Free"}
-                          </div>
-                          
-                          {!isAdmin && course.is_accessible && course.price > 0 && (
+
+                          {!isStaff && !course.is_purchased && (
+                            <div className="course-card-v2-price-badge" style={{
+                              position: "absolute", top: "0.5rem", right: "0.5rem",
+                              padding: "0.2rem 0.6rem", borderRadius: 8,
+                              fontSize: "0.75rem", fontWeight: 700,
+                              background: course.price > 0 ? "rgba(0,0,0,0.7)" : "rgba(22,163,74,0.85)",
+                              color: "#fff", backdropFilter: "blur(8px)",
+                            }}>
+                              {course.price > 0 ? `$${Number(course.price).toFixed(2)}` : "Free"}
+                            </div>
+                          )}
+
+                          {!isStaff && course.is_accessible && course.price > 0 && (
                             <div style={{
                               position: "absolute", top: "0.5rem", left: "0.5rem",
                               padding: "0.2rem 0.5rem", borderRadius: 8,
@@ -270,7 +274,7 @@ export default function CourseListPage() {
                               {course.is_purchased ? "Owned" : "VIP"}
                             </div>
                           )}
-                          {!isAdmin && !course.is_accessible && course.price > 0 && (
+                          {!isStaff && !course.is_accessible && course.price > 0 && (
                             <div style={{
                               position: "absolute", top: "0.5rem", left: "0.5rem",
                               padding: "0.2rem 0.5rem", borderRadius: 8,
@@ -284,7 +288,6 @@ export default function CourseListPage() {
                           )}
                         </div>
 
-                        
                         <div className="course-card-v2-body">
                           <h2 className="course-card-v2-title">{course.title}</h2>
                           <p className="course-card-v2-desc">{course.description}</p>
