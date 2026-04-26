@@ -527,21 +527,6 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
     users: charts.user_growth?.[i]?.count || 0,
   }));
 
-  // Homework status data for composed chart
-  const hwBreakdown = [
-    { name: "Graded", value: stats.homework?.graded || 0, color: "#16a34a" },
-    { name: "Pending", value: stats.homework?.pending_grading || 0, color: "#f59e0b" },
-    { name: "Drafts", value: stats.homework?.drafts || 0, color: "#6b7280" },
-  ];
-
-  // Engagement radial gauges data
-  const healthMetrics = [
-    { name: "Payment", value: stats.finance?.payment_success_rate || 0, fill: "#16a34a" },
-    { name: "Engagement", value: stats.engagement?.engagement_rate || 0, fill: "#06b6d4" },
-    { name: "Attendance", value: stats.attendance?.rate || 0, fill: "#14b8a6" },
-    { name: "Conversion", value: stats.finance?.course_conversion_rate || 0, fill: "#8b5cf6" },
-  ];
-
   return (
     <>
       <TabBar tabs={adminTabs} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -581,12 +566,6 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
                 color="#ec4899"
                 delay={0.2}
               />
-              <KpiStripItem
-                label="Engagement"
-                value={`${stats.engagement?.engagement_rate || 0}%`}
-                color="#8b5cf6"
-                delay={0.25}
-              />
             </div>
 
             {/* HERO CHART: Revenue + User Growth combined */}
@@ -613,33 +592,9 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
               </div>
             </ChartCard>
 
-            {/* Health Metrics radial + User Distribution pie */}
+            {/* User Distribution + Top Instructors */}
             <div className="db-grid-2">
-              <ChartCard title="Platform Health" delay={0.35}>
-                <div className="db-chart-wrap">
-                  <ResponsiveContainer width="100%" height={260}>
-                    <RadialBarChart cx="35%" cy="50%" innerRadius="20%" outerRadius="100%" barSize={14} data={healthMetrics} startAngle={90} endAngle={-270}>
-                      <RadialBar minAngle={15} background={{ fill: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)" }} clockWise dataKey="value" cornerRadius={8} />
-                      <Tooltip content={({ active, payload }) => {
-                        if (!active || !payload?.length) return null;
-                        const d = payload[0].payload;
-                        return (
-                          <div className="db-chart-tooltip">
-                            <span className="tooltip-label">{d.name}</span>
-                            <div className="tooltip-row">
-                              <span className="tooltip-dot" style={{ background: d.fill }} />
-                              <span className="tooltip-val" style={{ color: d.fill }}>{d.value}%</span>
-                            </div>
-                          </div>
-                        );
-                      }} />
-                      <Legend iconSize={10} layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: 11, paddingLeft: 8 }} formatter={(value, entry) => `${value} — ${entry.payload.value}%`} />
-                    </RadialBarChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-
-              <ChartCard title="User Distribution" delay={0.4}>
+              <ChartCard title="User Distribution" delay={0.35}>
                 <div className="db-chart-wrap">
                   <ResponsiveContainer width="100%" height={260}>
                     <PieChart>
@@ -651,30 +606,11 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
                   </ResponsiveContainer>
                 </div>
               </ChartCard>
-            </div>
 
-            {/* Homework Pipeline + Top Instructors as bar charts */}
-            <div className="db-grid-2">
-              <ChartCard title="Homework Pipeline" delay={0.45}>
-                <div className="db-chart-wrap">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={hwBreakdown} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: textColor }} axisLine={false} tickLine={false} width={75} />
-                      <Tooltip content={<ChartTooltip />} />
-                      <Bar dataKey="value" name="Submissions" radius={[0, 6, 6, 0]} barSize={26} label={{ position: "right", fill: textColor, fontSize: 11, fontWeight: 700 }}>
-                        {hwBreakdown.map((d, i) => <Cell key={i} fill={d.color} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-
-              <ChartCard title="Top Instructors by Students" delay={0.5}>
+              <ChartCard title="Top Instructors by Students" delay={0.4}>
                 {stats.top_instructors?.length > 0 ? (
                   <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={220}>
+                    <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={stats.top_instructors} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
                         <XAxis type="number" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
@@ -787,30 +723,6 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
               </ChartCard>
             </div>
 
-            {/* Homework breakdown as bar chart */}
-            <ChartCard title="Homework Pipeline Breakdown" delay={0.3}>
-              <div className="db-chart-wrap">
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={[
-                    { name: "Assignments", value: stats.homework?.total || 0, color: "#8b5cf6" },
-                    { name: "Submissions", value: stats.homework?.submissions || 0, color: "#3b82f6" },
-                    { name: "Graded", value: stats.homework?.graded || 0, color: "#16a34a" },
-                    { name: "Pending", value: stats.homework?.pending_grading || 0, color: "#f59e0b" },
-                    { name: "Drafts", value: stats.homework?.drafts || 0, color: "#6b7280" },
-                  ]} margin={{ top: 10, right: 15, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={48} label={{ position: "top", fill: textColor, fontSize: 11, fontWeight: 700 }}>
-                      {[
-                        { color: "#8b5cf6" }, { color: "#3b82f6" }, { color: "#16a34a" }, { color: "#f59e0b" }, { color: "#6b7280" }
-                      ].map((d, i) => <Cell key={i} fill={d.color} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </ChartCard>
           </motion.div>
         )}
 
@@ -962,41 +874,51 @@ function AdminDashboard({ stats, gridColor, textColor, isDark }) {
               ) : <EmptyChart message="No daily session data yet" />}
             </ChartCard>
 
-            <div className="db-grid-2">
-              <ChartCard title="Attendance by Session (Stacked)" delay={0.1}>
-                {(charts.attendance_by_session || []).length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={240}>
-                      <BarChart data={charts.attendance_by_session} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-                        <XAxis dataKey="session" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
-                        <Tooltip content={<ChartTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Bar dataKey="present" name="Present" stackId="a" fill="#16a34a" />
-                        <Bar dataKey="absent" name="Absent" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No attendance sessions yet" />}
-              </ChartCard>
+            {/* Per-group attendance breakdown — stacked bar chart */}
+            <ChartCard title="Attendance by Group (Stacked)" delay={0.1}>
+              {(charts.group_attendance_breakdown || []).length > 0 ? (
+                <div className="db-chart-wrap">
+                  <ResponsiveContainer width="100%" height={Math.max(60 * (charts.group_attendance_breakdown?.length || 1) + 60, 240)}>
+                    <BarChart data={charts.group_attendance_breakdown} layout="vertical" margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: textColor }} axisLine={false} tickLine={false} width={120} />
+                      <Tooltip content={<ChartTooltip />} />
+                      <Legend wrapperStyle={{ fontSize: 12 }} />
+                      <Bar dataKey="attended" name="Present" stackId="a" fill="#16a34a" />
+                      <Bar dataKey="online" name="Online" stackId="a" fill="#3b82f6" />
+                      <Bar dataKey="late" name="Late" stackId="a" fill="#f59e0b" />
+                      <Bar dataKey="excused" name="Excused" stackId="a" fill="#8b5cf6" />
+                      <Bar dataKey="absent" name="Absent" stackId="a" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : <EmptyChart message="No group attendance data yet" />}
+            </ChartCard>
 
-              <ChartCard title="Attendance Distribution" delay={0.15}>
-                {attDist.length > 0 ? (
-                  <div className="db-chart-wrap">
-                    <ResponsiveContainer width="100%" height={240}>
-                      <PieChart>
-                        <Pie data={attDist} cx="50%" cy="50%" innerRadius={60} outerRadius={95} paddingAngle={2} dataKey="value" nameKey="name" label={({ percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                          {attDist.map((d, i) => <Cell key={i} fill={d.color} />)}
-                        </Pie>
-                        <Tooltip content={<ChartTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : <EmptyChart message="No attendance data yet" />}
-              </ChartCard>
-            </div>
+            {/* Exact data table per group */}
+            <ChartCard title="Group Attendance Detail" delay={0.15}>
+              <DataTable
+                emptyMessage="No group attendance data yet"
+                columns={[
+                  { key: "name", label: "Group", render: (r) => (
+                    <div>
+                      <div className="db-table-primary">{r.name}</div>
+                      <div className="db-table-secondary">{r.students} student{r.students !== 1 ? "s" : ""} &middot; {r.sessions} session{r.sessions !== 1 ? "s" : ""}</div>
+                    </div>
+                  )},
+                  { key: "attended", label: "Present", align: "right", render: (r) => <span style={{ color: "#16a34a", fontWeight: 700 }}>{r.attended}</span> },
+                  { key: "online", label: "Online", align: "right", render: (r) => <span style={{ color: "#3b82f6", fontWeight: 700 }}>{r.online}</span> },
+                  { key: "late", label: "Late", align: "right", render: (r) => <span style={{ color: "#f59e0b", fontWeight: 700 }}>{r.late}</span> },
+                  { key: "excused", label: "Excused", align: "right", render: (r) => <span style={{ color: "#8b5cf6", fontWeight: 700 }}>{r.excused}</span> },
+                  { key: "absent", label: "Absent", align: "right", render: (r) => <span style={{ color: "#ef4444", fontWeight: 700 }}>{r.absent}</span> },
+                  { key: "rate", label: "Rate", align: "right", render: (r) => (
+                    <span className="db-table-amount" style={{ color: r.rate >= 80 ? "#16a34a" : r.rate >= 60 ? "#f59e0b" : "#ef4444" }}>{r.rate}%</span>
+                  )},
+                ]}
+                rows={charts.group_attendance_breakdown || []}
+              />
+            </ChartCard>
           </motion.div>
         )}
 
