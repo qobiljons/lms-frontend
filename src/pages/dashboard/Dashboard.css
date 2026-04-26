@@ -662,6 +662,211 @@
   color: #f59e0b;
 }
 
+/* ═══════════════════════════════════════════════════════
+   PRODUCTION-GRADE: KPI STRIP (compact, sparkline-driven)
+   ═══════════════════════════════════════════════════════ */
+.db-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  margin-bottom: 1.25rem;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.db-kpi-strip-item {
+  padding: 1rem 1.1rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  position: relative;
+  min-width: 0;
+}
+
+.db-kpi-strip-item:last-child { border-right: none; }
+
+.db-kpi-strip-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.db-kpi-strip-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.db-kpi-strip-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-kpi-strip-spark {
+  height: 32px;
+  margin: 0 -0.4rem -0.2rem;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .db-kpi-strip {
+  background: #1e1e1e;
+  border-color: #2a2a2a;
+}
+
+[data-theme="dark"] .db-kpi-strip-item {
+  border-right-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Pie legend below piechart */
+.db-pie-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.db-pie-legend b {
+  font-weight: 800;
+  margin-right: 0.25rem;
+}
+
+[data-theme="dark"] .db-pie-legend {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Production data table */
+.db-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: -0.25rem 0;
+}
+
+.db-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.db-table thead th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0.5rem 0.85rem 0.6rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.db-table tbody td {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.db-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.db-table tbody tr:hover td {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.db-table-primary {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.db-table-secondary {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  margin-top: 0.1rem;
+}
+
+.db-table-amount {
+  display: inline-block;
+  font-weight: 700;
+  color: #16a34a;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .db-table thead th {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .db-table tbody td {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .db-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Responsive for KPI strip */
+@media (max-width: 900px) {
+  .db-kpi-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .db-kpi-strip-item:nth-child(3) {
+    border-right: none;
+  }
+  .db-kpi-strip-item:nth-child(n+4) {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  [data-theme="dark"] .db-kpi-strip-item:nth-child(n+4) {
+    border-top-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+@media (max-width: 560px) {
+  .db-kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .db-kpi-strip-item {
+    padding: 0.85rem 0.85rem;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .db-kpi-strip-item:nth-child(odd) {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .db-kpi-strip-item:nth-child(even) {
+    border-right: none;
+  }
+  .db-kpi-strip-item:nth-child(-n+2) {
+    border-top: none;
+  }
+  .db-kpi-strip-value { font-size: 1.15rem; }
+  .db-table { font-size: 0.78rem; }
+  .db-table thead th { padding: 0.4rem 0.55rem 0.5rem; }
+  .db-table tbody td { padding: 0.55rem; }
+}
+
+
 /* KPI Premium Cards with trend */
 .db-kpi-grid {
   display: grid;
