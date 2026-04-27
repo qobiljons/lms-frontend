@@ -112,9 +112,7 @@ export default function CourseListPage() {
       formData.append("description", form.description);
       formData.append("price", form.price || "0");
       if (logoFile) formData.append("logo", logoFile);
-      await api.post("/courses/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.post("/courses/", formData);
       toast.success("Course created successfully!");
       setForm({ title: "", description: "", price: "" });
       setLogoFile(null);

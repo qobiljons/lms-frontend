@@ -57,6 +57,7 @@ export default function HomeworkSubmissionPage() {
   const [aiResult, setAiResult] = useState(null);
   const [aiType, setAiType] = useState("python");
   const fileInputRef = useRef(null);
+  const ensureSubRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
   const isStudent = user?.role === "student";
@@ -91,17 +92,24 @@ export default function HomeworkSubmissionPage() {
 
   const ensureSubmission = async () => {
     if (submission) return submission;
-    try {
-      const { data } = await api.post("/homework/submissions/", {
-        homework: Number(id),
-        answers: [],
-      });
-      setSubmission(data);
-      return data;
-    } catch (err) {
-      toast.error(err?.response?.data?.detail || "Could not start submission.");
-      return null;
-    }
+    if (ensureSubRef.current) return ensureSubRef.current;
+    const promise = (async () => {
+      try {
+        const { data } = await api.post("/homework/submissions/", {
+          homework: Number(id),
+          answers: [],
+        });
+        setSubmission(data);
+        return data;
+      } catch (err) {
+        toast.error(err?.response?.data?.detail || "Could not start submission.");
+        return null;
+      } finally {
+        ensureSubRef.current = null;
+      }
+    })();
+    ensureSubRef.current = promise;
+    return promise;
   };
 
   const uploadFiles = async (fileList) => {
@@ -122,9 +130,7 @@ export default function HomeworkSubmissionPage() {
       const fd = new FormData();
       fd.append("file", f);
       try {
-        await api.post(`/homework/submissions/${sub.id}/upload/`, fd, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await api.post(`/homework/submissions/${sub.id}/upload/`, fd);
         ok++;
       } catch (err) {
         toast.error(`"${f.name}": ${err?.response?.data?.detail || "upload failed"}`);

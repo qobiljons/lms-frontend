@@ -12,6 +12,9 @@ api.interceptors.request.use((config) => {
   if (tokens?.access) {
     config.headers.Authorization = `Bearer ${tokens.access}`;
   }
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
   return config;
 });
 

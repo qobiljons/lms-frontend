@@ -132,9 +132,7 @@ export default function AdminCoursesPage() {
       formData.append("description", form.description);
       formData.append("price", parseFloat(form.price) || 0);
       if (logoFile) formData.append("logo", logoFile);
-      await api.post("/courses/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.post("/courses/", formData);
       toast.success("Course created successfully!");
       setForm({ title: "", description: "", price: "0" });
       setLogoFile(null);
@@ -185,9 +183,7 @@ export default function AdminCoursesPage() {
       formData.append("description", editForm.description);
       formData.append("price", parseFloat(editForm.price) || 0);
       if (editLogoFile) formData.append("logo", editLogoFile);
-      await api.patch(`/courses/${slug}/`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.patch(`/courses/${slug}/`, formData);
       toast.success("Course updated!");
       cancelEdit();
       fetchCourses(page);

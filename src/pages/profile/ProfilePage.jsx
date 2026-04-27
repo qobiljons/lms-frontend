@@ -146,9 +146,7 @@ export default function ProfilePage() {
       formData.append("phone", profileForm.phone);
       formData.append("bio", profileForm.bio);
       if (avatar) formData.append("avatar", avatar);
-      await api.patch("/auth/me/profile/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.patch("/auth/me/profile/", formData);
       toast.success("Profile updated!");
       setAvatar(null);
     } catch (err) {
