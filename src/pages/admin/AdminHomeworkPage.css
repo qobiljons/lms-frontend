@@ -6,22 +6,235 @@
 
 /* ── Header ── */
 .ahw-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: 1.75rem;
+}
+.ahw-header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.ahw-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
 }
 .ahw-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.2rem;
   color: var(--text-primary);
 }
 .ahw-subtitle {
   font-size: 0.88rem;
   color: var(--text-secondary);
   margin: 0;
+}
+
+/* Breadcrumb */
+.ahw-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.ahw-bc-item {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted, #9ca3af);
+}
+.ahw-bc-item.ahw-bc-active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.ahw-bc-item.ahw-bc-link {
+  cursor: pointer;
+  color: var(--accent, #16a34a);
+  transition: opacity 0.15s;
+}
+.ahw-bc-item.ahw-bc-link:hover { opacity: 0.75; }
+.ahw-bc-sep {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Back button */
+.ahw-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  background: var(--bg-primary, #fff);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.ahw-back-btn:hover {
+  border-color: rgba(0,0,0,0.2);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ── Course card grid (Phase 1) ── */
+.ahw-course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.ahw-course-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.3rem;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.ahw-course-card:hover {
+  border-color: var(--c-color, #16a34a);
+  background: var(--c-accent, rgba(22,163,74,0.04));
+}
+.ahw-course-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ahw-course-body { flex: 1; min-width: 0; }
+.ahw-course-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ahw-course-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+.ahw-course-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.ahw-course-card:hover .ahw-course-arrow { transform: translateX(3px); }
+
+/* ── Group card grid (Phase 2) ── */
+.ahw-group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+.ahw-group-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.ahw-group-card:hover {
+  border-color: rgba(22,163,74,0.3);
+  background: rgba(22,163,74,0.03);
+}
+.ahw-group-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(22,163,74,0.1);
+  color: var(--accent, #16a34a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ahw-group-body { flex: 1; min-width: 0; }
+.ahw-group-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ahw-group-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+.ahw-group-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.ahw-group-card:hover .ahw-group-arrow { transform: translateX(3px); }
+
+/* ── Lesson sections (Phase 3) ── */
+.ahw-lesson-section {
+  margin-bottom: 2rem;
+}
+.ahw-lesson-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  padding: 0 0.2rem;
+}
+.ahw-lesson-num-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.75rem;
+  border-radius: 20px;
+  background: rgba(99,102,241,0.1);
+  color: #6366f1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ahw-lesson-title-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ahw-lesson-hw-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(0,0,0,0.05);
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* skeleton helpers */
+.skeleton-box {
+  background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.10) 50%, rgba(0,0,0,0.06) 75%);
+  background-size: 200% 100%;
+  animation: ahw-shimmer 1.4s infinite;
 }
 
 /* ── Stat cards ── */
@@ -69,60 +282,6 @@
   font-weight: 500;
 }
 
-/* ── Toolbar ── */
-.ahw-toolbar {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  align-items: center;
-}
-.ahw-search {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-primary, #fff);
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 10px;
-  padding: 0.55rem 0.85rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  color: var(--text-muted);
-}
-.ahw-search input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-  font-family: inherit;
-}
-.ahw-search input::placeholder { color: var(--text-muted); }
-.ahw-search-clear {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  display: flex;
-  padding: 2px;
-  border-radius: 4px;
-}
-.ahw-search-clear:hover { color: var(--text-primary); }
-
-.ahw-select {
-  padding: 0.55rem 0.85rem;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 10px;
-  background: var(--bg-primary, #fff);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  outline: none;
-  min-width: 160px;
-}
-.ahw-select:focus { border-color: var(--accent, #16a34a); }
 
 /* ── Skeleton ── */
 .ahw-skeleton-list { display: flex; flex-direction: column; gap: 0.85rem; }
@@ -559,16 +718,30 @@
   white-space: pre-wrap;
 }
 
-/* Dark mode */
-[data-theme="dark"] .ahw-card { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.07); }
-[data-theme="dark"] .ahw-stat-card { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.07); }
-[data-theme="dark"] .ahw-search { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.08); }
-[data-theme="dark"] .ahw-select { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.08); color: var(--text-primary); }
-[data-theme="dark"] .ahw-table th { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
-[data-theme="dark"] .ahw-table td { border-color: rgba(255,255,255,0.04); }
+/* ── Dark mode ── */
+[data-theme="dark"] .ahw-card           { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .ahw-stat-card      { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .ahw-table th       { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+[data-theme="dark"] .ahw-table td       { border-color: rgba(255,255,255,0.04); }
 [data-theme="dark"] .ahw-table tr:hover td { background: rgba(255,255,255,0.02); }
-[data-theme="dark"] .ahw-score-bar { background: rgba(255,255,255,0.08); }
+[data-theme="dark"] .ahw-score-bar      { background: rgba(255,255,255,0.08); }
 [data-theme="dark"] .ahw-card-header:hover { background: rgba(255,255,255,0.02); }
 [data-theme="dark"] .ahw-grade-input,
 [data-theme="dark"] .ahw-grade-textarea { background: var(--bg-primary, #111); border-color: rgba(255,255,255,0.1); }
-[data-theme="dark"] .ahw-sub-tab { border-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .ahw-sub-tab        { border-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .ahw-course-card    { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .ahw-course-card:hover { background: var(--c-accent, rgba(22,163,74,0.06)); }
+[data-theme="dark"] .ahw-group-card     { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .ahw-group-card:hover { background: rgba(22,163,74,0.05); }
+[data-theme="dark"] .ahw-back-btn       { background: var(--bg-secondary, #1a1a1a); border-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .ahw-back-btn:hover { border-color: rgba(255,255,255,0.2); }
+[data-theme="dark"] .ahw-lesson-hw-pill { background: rgba(255,255,255,0.07); }
+[data-theme="dark"] .skeleton-box       { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); }
+
+@keyframes ahw-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .ahw-course-grid { grid-template-columns: 1fr; }
+  .ahw-group-grid  { grid-template-columns: 1fr; }
+}

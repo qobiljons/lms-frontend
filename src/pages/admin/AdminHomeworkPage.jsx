@@ -1,8 +1,7 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api/axios";
 import { toast } from "react-toastify";
-import { useAuth } from "../../context/AuthContext";
 import { getAvatarUrl, avatarErrorHandler } from "../../utils/avatar";
 import PageTransition from "../../components/PageTransition";
 import "./AdminHomeworkPage.css";
@@ -42,10 +41,7 @@ function Avatar({ profile, name, size = 32 }) {
   const colors = ["#6366f1","#8b5cf6","#ec4899","#f59e0b","#16a34a","#3b82f6","#ef4444"];
   const bg = colors[(name || "").charCodeAt(0) % colors.length];
   return (
-    <div
-      className="ahw-avatar ahw-avatar-initials"
-      style={{ width: size, height: size, background: bg }}
-    >
+    <div className="ahw-avatar ahw-avatar-initials" style={{ width: size, height: size, background: bg }}>
       {initials}
     </div>
   );
@@ -84,9 +80,7 @@ function ProgressRing({ submitted, total }) {
           style={{ transition: "stroke-dasharray 0.6s ease" }}
         />
       </svg>
-      <span className="ahw-ring-label" style={{ color }}>
-        {submitted}/{total}
-      </span>
+      <span className="ahw-ring-label" style={{ color }}>{submitted}/{total}</span>
     </div>
   );
 }
@@ -102,26 +96,40 @@ function formatDateTime(iso) {
 function formatBytes(b) {
   if (!b) return "";
   if (b < 1024) return `${b}B`;
-  if (b < 1048576) return `${(b/1024).toFixed(0)}KB`;
-  return `${(b/1048576).toFixed(1)}MB`;
+  if (b < 1048576) return `${(b / 1024).toFixed(0)}KB`;
+  return `${(b / 1048576).toFixed(1)}MB`;
 }
 
+const COURSE_COLORS = [
+  { color: "#6366f1", iconBg: "rgba(99,102,241,0.15)",  cardAccent: "rgba(99,102,241,0.06)"  },
+  { color: "#ec4899", iconBg: "rgba(236,72,153,0.15)",  cardAccent: "rgba(236,72,153,0.06)"  },
+  { color: "#f59e0b", iconBg: "rgba(245,158,11,0.15)",  cardAccent: "rgba(245,158,11,0.06)"  },
+  { color: "#16a34a", iconBg: "rgba(22,163,74,0.15)",   cardAccent: "rgba(22,163,74,0.06)"   },
+  { color: "#3b82f6", iconBg: "rgba(59,130,246,0.15)",  cardAccent: "rgba(59,130,246,0.06)"  },
+  { color: "#ef4444", iconBg: "rgba(239,68,68,0.15)",   cardAccent: "rgba(239,68,68,0.06)"   },
+  { color: "#14b8a6", iconBg: "rgba(20,184,166,0.15)",  cardAccent: "rgba(20,184,166,0.06)"  },
+];
+
 export default function AdminHomeworkPage() {
-  const { user } = useAuth();
-  const [homeworks, setHomeworks]         = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [search, setSearch]               = useState("");
-  const [courseFilter, setCourseFilter]   = useState("all");
-  const [statusFilter, setStatusFilter]   = useState("all");
-  const [expandedId, setExpandedId]       = useState(null);
-  const [subsMap, setSubsMap]             = useState({});       // hwId -> submissions[]
-  const [studentsMap, setStudentsMap]     = useState({});       // courseId -> students[]
-  const [loadingExpand, setLoadingExpand] = useState(null);
-  const [subFilter, setSubFilter]         = useState({});       // hwId -> "all"|"submitted"|"graded"|"missing"
-  const [gradingId, setGradingId]         = useState(null);
-  const [gradeForm, setGradeForm]         = useState({ score: "", feedback: "" });
-  const [saving, setSaving]               = useState(false);
-  const searchRef = useRef(null);
+  const [homeworks, setHomeworks]           = useState([]);
+  const [loading, setLoading]               = useState(true);
+
+  // Navigation drill-down
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedGroup, setSelectedGroup]   = useState(null);
+  const [courseGroups, setCourseGroups]     = useState([]);
+  const [loadingGroups, setLoadingGroups]   = useState(false);
+
+  // Submissions per homework id
+  const [subsMap, setSubsMap]               = useState({});
+  const [expandedId, setExpandedId]         = useState(null);
+  const [loadingExpand, setLoadingExpand]   = useState(null);
+  const [subFilter, setSubFilter]           = useState({});
+
+  // Inline grading
+  const [gradingId, setGradingId]           = useState(null);
+  const [gradeForm, setGradeForm]           = useState({ score: "", feedback: "" });
+  const [saving, setSaving]                 = useState(false);
 
   const fetchHomeworks = useCallback(async () => {
     setLoading(true);
@@ -137,41 +145,80 @@ export default function AdminHomeworkPage() {
 
   useEffect(() => { fetchHomeworks(); }, [fetchHomeworks]);
 
+  // Unique courses extracted from homeworks
+  const courses = [...new Map(
+    homeworks.filter(h => h.course_id).map(h => [h.course_id, { id: h.course_id, title: h.course_title || `Course #${h.course_id}` }])
+  ).values()]
+    .map(c => ({ ...c, count: homeworks.filter(h => h.course_id === c.id).length }))
+    .sort((a, b) => a.title.localeCompare(b.title));
+
+  // ── Phase handlers ──────────────────────────────────────────────────────────
+
+  const handleSelectCourse = async (course) => {
+    setSelectedCourse(course);
+    setSelectedGroup(null);
+    setCourseGroups([]);
+    setSubsMap({});
+    setExpandedId(null);
+    setLoadingGroups(true);
+    try {
+      const { data } = await api.get("/groups/my/");
+      const all = data.results || data || [];
+      const relevant = all.filter(g =>
+        (g.courses || []).some(c => (typeof c === "object" ? c.id : c) === course.id)
+      );
+      if (relevant.length === 0) { setCourseGroups([]); return; }
+      const details = await Promise.all(relevant.map(g => api.get(`/groups/${g.id}/`)));
+      setCourseGroups(details.map(r => r.data));
+    } catch {
+      toast.error("Failed to load groups.");
+    } finally {
+      setLoadingGroups(false);
+    }
+  };
+
+  const handleSelectGroup = (group) => {
+    setSelectedGroup(group);
+    setSubsMap({});
+    setExpandedId(null);
+    setSubFilter({});
+  };
+
+  const handleBack = () => {
+    if (selectedGroup) {
+      setSelectedGroup(null);
+      setSubsMap({});
+      setExpandedId(null);
+    } else if (selectedCourse) {
+      setSelectedCourse(null);
+      setCourseGroups([]);
+    }
+  };
+
+  const goToRoot = () => {
+    setSelectedCourse(null);
+    setSelectedGroup(null);
+    setCourseGroups([]);
+    setSubsMap({});
+    setExpandedId(null);
+  };
+
+  const goToCourse = () => {
+    setSelectedGroup(null);
+    setSubsMap({});
+    setExpandedId(null);
+  };
+
+  // ── Expansion & grading ────────────────────────────────────────────────────
+
   const handleExpand = async (hw) => {
     if (expandedId === hw.id) { setExpandedId(null); return; }
     setExpandedId(hw.id);
     if (subsMap[hw.id]) return;
     setLoadingExpand(hw.id);
     try {
-      const [subsRes, groupsRes] = await Promise.all([
-        api.get(`/homework/submissions/?homework=${hw.id}&page_size=500`),
-        hw.course_id ? api.get(`/groups/my/`) : Promise.resolve({ data: [] }),
-      ]);
-      const subs = subsRes.data.results || subsRes.data;
-
-      const allGroups = groupsRes.data.results || groupsRes.data || [];
-      const relevantGroups = allGroups.filter(g =>
-        (g.courses || []).some(c => (typeof c === "object" ? c.id : c) === hw.course_id)
-      );
-
-      let students = [];
-      if (relevantGroups.length > 0) {
-        const detailRes = await Promise.all(
-          relevantGroups.map(g => api.get(`/groups/${g.id}/`))
-        );
-        const seen = new Set();
-        detailRes.forEach(r => {
-          const detail = r.data;
-          (detail.students_detail || []).forEach(s => {
-            if (!seen.has(s.id)) { seen.add(s.id); students.push(s); }
-          });
-        });
-      }
-
-      setSubsMap(prev => ({ ...prev, [hw.id]: subs }));
-      if (students.length > 0) {
-        setStudentsMap(prev => ({ ...prev, [hw.course_id]: students }));
-      }
+      const { data } = await api.get(`/homework/submissions/?homework=${hw.id}&page_size=500`);
+      setSubsMap(prev => ({ ...prev, [hw.id]: data.results || data }));
     } catch {
       toast.error("Failed to load submissions.");
     } finally {
@@ -208,445 +255,541 @@ export default function AdminHomeworkPage() {
     }
   };
 
-  const courses = [...new Map(
-    homeworks.filter(h => h.course_id).map(h => [h.course_id, { id: h.course_id, title: h.course_title || `Course #${h.course_id}` }])
-  ).values()].sort((a, b) => a.title.localeCompare(b.title));
+  // ── Derived data for Phase 3 ──────────────────────────────────────────────
 
-  const filtered = homeworks.filter(hw => {
-    if (courseFilter !== "all" && String(hw.course_id) !== String(courseFilter)) return false;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      if (!(hw.title || "").toLowerCase().includes(q) && !(hw.course_title || "").toLowerCase().includes(q)) return false;
+  const courseHomeworks = homeworks.filter(h => h.course_id === selectedCourse?.id);
+
+  const lessonMap = courseHomeworks.reduce((acc, hw) => {
+    const key = hw.lesson_order ?? 0;
+    if (!acc[key]) acc[key] = { order: key, title: hw.lesson_title, homeworks: [] };
+    acc[key].homeworks.push(hw);
+    return acc;
+  }, {});
+  const lessonGroups = Object.values(lessonMap).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const groupStudents = selectedGroup ? (selectedGroup.students_detail || []) : [];
+  const totalPending  = courseHomeworks.reduce((acc, hw) => acc + (subsMap[hw.id] || []).filter(s => s.status === "submitted").length, 0);
+  const totalGraded   = courseHomeworks.reduce((acc, hw) => acc + (subsMap[hw.id] || []).filter(s => s.status === "graded").length, 0);
+
+  const phase = !selectedCourse ? 1 : !selectedGroup ? 2 : 3;
+
+  // ── Render helpers ────────────────────────────────────────────────────────
+
+  const renderHomeworkCard = (hw, hi) => {
+    const subs       = subsMap[hw.id] || [];
+    const isExpanded = expandedId === hw.id;
+    const isLoading  = loadingExpand === hw.id;
+    const due        = hw.due_date ? new Date(hw.due_date) : null;
+    const isOverdue  = due && due < new Date();
+    const hwSubFilter = subFilter[hw.id] || "all";
+
+    const submitted    = subs.filter(s => s.status === "submitted").length;
+    const graded       = subs.filter(s => s.status === "graded").length;
+    const drafts       = subs.filter(s => s.status === "draft").length;
+    const totalSubs    = subs.length;
+    const enrolled     = groupStudents.length || subs.length;
+
+    let rows = [];
+    if (groupStudents.length > 0) {
+      rows = groupStudents.map(stu => {
+        const sub = subs.find(s => (s.student === stu.id || s.student?.id === stu.id));
+        return sub
+          ? { ...sub, _student: stu, _missing: false }
+          : { _student: stu, _missing: true, id: `missing-${stu.id}`, status: "missing" };
+      });
+      subs.forEach(sub => {
+        const sid = sub.student?.id ?? sub.student;
+        if (!groupStudents.find(s => s.id === sid)) rows.push({ ...sub, _student: null, _missing: false });
+      });
+    } else {
+      rows = subs.map(sub => ({ ...sub, _student: null, _missing: false }));
     }
-    return true;
-  });
 
-  const totalPendingGrading = homeworks.reduce((acc, hw) => {
-    const subs = subsMap[hw.id] || [];
-    return acc + subs.filter(s => s.status === "submitted").length;
-  }, 0);
+    const missingCount = rows.filter(r => r._missing).length;
 
-  const totalGraded = homeworks.reduce((acc, hw) => {
-    const subs = subsMap[hw.id] || [];
-    return acc + subs.filter(s => s.status === "graded").length;
-  }, 0);
+    const visibleRows = rows.filter(r => {
+      if (hwSubFilter === "all")       return true;
+      if (hwSubFilter === "missing")   return r._missing;
+      if (hwSubFilter === "submitted") return r.status === "submitted";
+      if (hwSubFilter === "graded")    return r.status === "graded";
+      if (hwSubFilter === "draft")     return r.status === "draft";
+      return true;
+    });
+
+    return (
+      <motion.div
+        key={hw.id}
+        className={`ahw-card glass ${isExpanded ? "ahw-card-expanded" : ""}`}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: hi * 0.04 }}
+      >
+        <div className="ahw-card-header" onClick={() => handleExpand(hw)}>
+          <div className="ahw-card-left">
+            <div className="ahw-card-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div className="ahw-card-info">
+              <div className="ahw-card-title">{hw.title}</div>
+              <div className="ahw-card-meta">
+                {due && (
+                  <span className={`ahw-tag ${isOverdue ? "ahw-tag-overdue" : "ahw-tag-due"}`}>
+                    Due {formatDate(hw.due_date)}
+                  </span>
+                )}
+                <span className="ahw-tag ahw-tag-pts">{hw.total_points} pts</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="ahw-card-right">
+            {isLoading ? (
+              <div className="ahw-expand-spinner" />
+            ) : subsMap[hw.id] ? (
+              <ProgressRing submitted={totalSubs} total={enrolled} />
+            ) : null}
+            <div className="ahw-card-badges">
+              {submitted > 0    && <span className="ahw-badge ahw-badge-submitted">{submitted} Submitted</span>}
+              {graded > 0       && <span className="ahw-badge ahw-badge-graded">{graded} Graded</span>}
+              {drafts > 0       && <span className="ahw-badge ahw-badge-draft">{drafts} Draft</span>}
+              {missingCount > 0 && <span className="ahw-badge ahw-badge-missing">{missingCount} Missing</span>}
+            </div>
+            <motion.span className="ahw-chevron" animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </motion.span>
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              className="ahw-expand"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            >
+              {isLoading ? (
+                <div className="ahw-expand-loading">
+                  <div className="ahw-expand-spinner" />
+                  Loading submissions...
+                </div>
+              ) : (
+                <>
+                  <div className="ahw-sub-tabs">
+                    {[
+                      { key: "all",       label: `All (${rows.length})` },
+                      { key: "submitted", label: `Submitted (${submitted})` },
+                      { key: "graded",    label: `Graded (${graded})` },
+                      { key: "draft",     label: `Draft (${drafts})` },
+                      { key: "missing",   label: `Missing (${missingCount})` },
+                    ].map(t => (
+                      <button
+                        key={t.key}
+                        className={`ahw-sub-tab ${hwSubFilter === t.key ? "active" : ""}`}
+                        onClick={() => setSubFilter(prev => ({ ...prev, [hw.id]: t.key }))}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {visibleRows.length === 0 ? (
+                    <div className="ahw-no-subs">No submissions in this category.</div>
+                  ) : (
+                    <div className="ahw-table-wrap">
+                      <table className="ahw-table">
+                        <thead>
+                          <tr>
+                            <th>Student</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Files</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {visibleRows.map((row, ri) => {
+                            const stu  = row._student;
+                            const name = stu
+                              ? `${stu.first_name} ${stu.last_name}`.trim() || stu.username
+                              : row.student_name || `Student #${row.student}`;
+                            const email    = stu?.email || row.student_email || "";
+                            const files    = row.uploaded_files || [];
+                            const isGrading = gradingId === row.id;
+
+                            return (
+                              <motion.tr
+                                key={row.id}
+                                initial={{ opacity: 0, x: -8 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: ri * 0.03 }}
+                              >
+                                <td>
+                                  <div className="ahw-student-cell">
+                                    <Avatar profile={stu?.profile} name={name} size={34} />
+                                    <div className="ahw-student-info">
+                                      <span className="ahw-student-name">{name}</span>
+                                      {email && <span className="ahw-student-email">{email}</span>}
+                                    </div>
+                                  </div>
+                                </td>
+                                <td><StatusPill status={row.status} /></td>
+                                <td>
+                                  {row._missing
+                                    ? <span className="ahw-no-score">—</span>
+                                    : <ScoreBar score={row.score} total={hw.total_points} />
+                                  }
+                                </td>
+                                <td>
+                                  {row._missing || files.length === 0
+                                    ? <span className="ahw-no-files">No files</span>
+                                    : (
+                                      <div className="ahw-files">
+                                        {files.map(f => (
+                                          <a
+                                            key={f.id}
+                                            href={f.file}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="ahw-file-chip"
+                                            title={f.filename}
+                                          >
+                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            <span className="ahw-file-name">{f.filename}</span>
+                                            {f.file_size > 0 && <span className="ahw-file-size">{formatBytes(f.file_size)}</span>}
+                                          </a>
+                                        ))}
+                                      </div>
+                                    )
+                                  }
+                                </td>
+                                <td className="ahw-date-cell">
+                                  {row._missing ? <span className="ahw-no-score">—</span> : formatDateTime(row.submitted_at)}
+                                </td>
+                                <td>
+                                  {!row._missing && (
+                                    isGrading ? (
+                                      <div className="ahw-grade-form">
+                                        <input
+                                          type="number"
+                                          className="ahw-grade-input"
+                                          placeholder={`Score /${hw.total_points}`}
+                                          min="0"
+                                          max={hw.total_points}
+                                          value={gradeForm.score}
+                                          onChange={e => setGradeForm(p => ({ ...p, score: e.target.value }))}
+                                        />
+                                        <textarea
+                                          className="ahw-grade-textarea"
+                                          placeholder="Feedback (optional)"
+                                          rows={2}
+                                          value={gradeForm.feedback}
+                                          onChange={e => setGradeForm(p => ({ ...p, feedback: e.target.value }))}
+                                        />
+                                        <div className="ahw-grade-actions">
+                                          <motion.button
+                                            className="ahw-btn-save"
+                                            onClick={() => handleGrade(row.id, hw.id)}
+                                            disabled={saving}
+                                            whileTap={{ scale: 0.95 }}
+                                          >
+                                            {saving ? "Saving…" : "Save"}
+                                          </motion.button>
+                                          <motion.button
+                                            className="ahw-btn-cancel"
+                                            onClick={() => { setGradingId(null); setGradeForm({ score: "", feedback: "" }); }}
+                                            whileTap={{ scale: 0.95 }}
+                                          >
+                                            Cancel
+                                          </motion.button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <motion.button
+                                        className="ahw-btn-grade"
+                                        onClick={() => {
+                                          setGradingId(row.id);
+                                          setGradeForm({
+                                            score: row.score != null ? String(row.score) : "",
+                                            feedback: row.feedback || "",
+                                          });
+                                        }}
+                                        whileHover={{ scale: 1.03 }}
+                                        whileTap={{ scale: 0.95 }}
+                                      >
+                                        {row.status === "graded" ? "Re-grade" : "Grade"}
+                                      </motion.button>
+                                    )
+                                  )}
+                                </td>
+                              </motion.tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {rows.filter(r => r.feedback).length > 0 && (
+                    <div className="ahw-feedback-summary">
+                      <div className="ahw-feedback-title">Feedback given</div>
+                      {rows.filter(r => r.feedback).map(r => {
+                        const n = r._student
+                          ? `${r._student.first_name} ${r._student.last_name}`.trim() || r._student.username
+                          : r.student_name;
+                        return (
+                          <div key={r.id} className="ahw-feedback-row">
+                            <span className="ahw-feedback-who">{n}</span>
+                            <span className="ahw-feedback-text">{r.feedback}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  };
+
+  // ── Main render ───────────────────────────────────────────────────────────
 
   return (
     <PageTransition>
       <div className="ahw-container">
 
-        {/* Header */}
+        {/* Header + breadcrumb */}
         <div className="ahw-header">
-          <div>
-            <h1>Homework Tracker</h1>
-            <p className="ahw-subtitle">
-              {filtered.length} assignment{filtered.length !== 1 ? "s" : ""}
-              {courseFilter !== "all" && ` · filtered by course`}
-            </p>
-          </div>
-        </div>
+          <div className="ahw-header-inner">
+            {/* Breadcrumb */}
+            <div className="ahw-breadcrumb">
+              <span
+                className={`ahw-bc-item ${phase === 1 ? "ahw-bc-active" : "ahw-bc-link"}`}
+                onClick={phase > 1 ? goToRoot : undefined}
+              >
+                Homework Tracker
+              </span>
+              {selectedCourse && (
+                <>
+                  <span className="ahw-bc-sep">›</span>
+                  <span
+                    className={`ahw-bc-item ${phase === 2 ? "ahw-bc-active" : "ahw-bc-link"}`}
+                    onClick={phase > 2 ? goToCourse : undefined}
+                  >
+                    {selectedCourse.title}
+                  </span>
+                </>
+              )}
+              {selectedGroup && (
+                <>
+                  <span className="ahw-bc-sep">›</span>
+                  <span className="ahw-bc-item ahw-bc-active">{selectedGroup.name}</span>
+                </>
+              )}
+            </div>
 
-        {/* Stat cards */}
-        <div className="ahw-stats">
-          <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-            <div className="ahw-stat-icon" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <div>
-              <div className="ahw-stat-num">{homeworks.length}</div>
-              <div className="ahw-stat-label">Total Homeworks</div>
-            </div>
-          </motion.div>
-
-          <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
-            <div className="ahw-stat-icon" style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <div>
-              <div className="ahw-stat-num">{totalPendingGrading}</div>
-              <div className="ahw-stat-label">Pending Review</div>
-            </div>
-          </motion.div>
-
-          <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-            <div className="ahw-stat-icon" style={{ background: "rgba(22,163,74,0.1)", color: "#16a34a" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            </div>
-            <div>
-              <div className="ahw-stat-num">{totalGraded}</div>
-              <div className="ahw-stat-label">Graded</div>
-            </div>
-          </motion.div>
-
-          <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
-            <div className="ahw-stat-icon" style={{ background: "rgba(59,130,246,0.1)", color: "#3b82f6" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <div>
-              <div className="ahw-stat-num">
-                {Object.values(subsMap).flat().length}
+            {/* Title row */}
+            <div className="ahw-title-row">
+              {phase > 1 && (
+                <button className="ahw-back-btn" onClick={handleBack}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+              )}
+              <div>
+                <h1>
+                  {phase === 1 && "Homework Tracker"}
+                  {phase === 2 && selectedCourse.title}
+                  {phase === 3 && selectedGroup.name}
+                </h1>
+                <p className="ahw-subtitle">
+                  {phase === 1 && "Select a course category to get started"}
+                  {phase === 2 && `Select a group · ${selectedCourse.title}`}
+                  {phase === 3 && `${courseHomeworks.length} assignment${courseHomeworks.length !== 1 ? "s" : ""} · ${selectedCourse.title}`}
+                </p>
               </div>
-              <div className="ahw-stat-label">Total Submissions</div>
             </div>
-          </motion.div>
-        </div>
-
-        {/* Toolbar */}
-        <div className="ahw-toolbar">
-          <div className="ahw-search">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input
-              ref={searchRef}
-              type="text"
-              placeholder="Search by homework or course..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-            {search && (
-              <button className="ahw-search-clear" onClick={() => setSearch("")}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            )}
           </div>
-          <select className="ahw-select" value={courseFilter} onChange={e => setCourseFilter(e.target.value)}>
-            <option value="all">All courses</option>
-            {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-          </select>
         </div>
 
-        {/* List */}
-        {loading ? (
-          <div className="ahw-skeleton-list">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="ahw-skeleton-card glass">
-                <div className="skeleton-row" style={{ width: "60%", height: 18, borderRadius: 6 }} />
-                <div className="skeleton-row" style={{ width: "35%", height: 13, borderRadius: 6, marginTop: 8 }} />
+        {/* ── Phase 1: Course / category cards ── */}
+        {phase === 1 && (
+          loading ? (
+            <div className="ahw-course-grid">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="ahw-course-card glass">
+                  <div className="ahw-course-icon skeleton-box" style={{ width: 46, height: 46, borderRadius: 12 }} />
+                  <div style={{ flex: 1 }}>
+                    <div className="skeleton-row" style={{ width: "65%", height: 16, borderRadius: 6 }} />
+                    <div className="skeleton-row" style={{ width: "38%", height: 12, borderRadius: 6, marginTop: 7 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="ahw-empty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <p>No homework assignments found</p>
+            </div>
+          ) : (
+            <div className="ahw-course-grid">
+              {courses.map((course, i) => {
+                const theme = COURSE_COLORS[i % COURSE_COLORS.length];
+                return (
+                  <motion.div
+                    key={course.id}
+                    className="ahw-course-card glass"
+                    style={{ "--c-color": theme.color, "--c-accent": theme.cardAccent }}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.13)" }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleSelectCourse(course)}
+                  >
+                    <div className="ahw-course-icon" style={{ background: theme.iconBg, color: theme.color }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                    </div>
+                    <div className="ahw-course-body">
+                      <div className="ahw-course-title">{course.title}</div>
+                      <div className="ahw-course-count">{course.count} homework{course.count !== 1 ? "s" : ""}</div>
+                    </div>
+                    <svg className="ahw-course-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )
+        )}
+
+        {/* ── Phase 2: Group cards ── */}
+        {phase === 2 && (
+          loadingGroups ? (
+            <div className="ahw-group-grid">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="ahw-group-card glass">
+                  <div className="skeleton-row" style={{ width: "55%", height: 16, borderRadius: 6 }} />
+                  <div className="skeleton-row" style={{ width: "35%", height: 12, borderRadius: 6, marginTop: 7 }} />
+                </div>
+              ))}
+            </div>
+          ) : courseGroups.length === 0 ? (
+            <div className="ahw-empty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-4-4h-4"/><circle cx="17" cy="7" r="3"/></svg>
+              <p>No groups found for this course</p>
+            </div>
+          ) : (
+            <div className="ahw-group-grid">
+              {courseGroups.map((group, i) => {
+                const stuCount = (group.students_detail || group.students || []).length;
+                return (
+                  <motion.div
+                    key={group.id}
+                    className="ahw-group-card glass"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    whileHover={{ y: -3, boxShadow: "0 8px 28px rgba(0,0,0,0.1)" }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleSelectGroup(group)}
+                  >
+                    <div className="ahw-group-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-4-4h-4"/><circle cx="17" cy="7" r="3"/></svg>
+                    </div>
+                    <div className="ahw-group-body">
+                      <div className="ahw-group-name">{group.name}</div>
+                      <div className="ahw-group-count">{stuCount} student{stuCount !== 1 ? "s" : ""}</div>
+                    </div>
+                    <svg className="ahw-group-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )
+        )}
+
+        {/* ── Phase 3: Lesson + homework tracker ── */}
+        {phase === 3 && (
+          <>
+            {/* Stat cards */}
+            <div className="ahw-stats">
+              <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
+                <div className="ahw-stat-icon" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div>
+                  <div className="ahw-stat-num">{courseHomeworks.length}</div>
+                  <div className="ahw-stat-label">Assignments</div>
+                </div>
+              </motion.div>
+
+              <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
+                <div className="ahw-stat-icon" style={{ background: "rgba(59,130,246,0.1)", color: "#3b82f6" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <div className="ahw-stat-num">{groupStudents.length}</div>
+                  <div className="ahw-stat-label">Students</div>
+                </div>
+              </motion.div>
+
+              <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+                <div className="ahw-stat-icon" style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div>
+                  <div className="ahw-stat-num">{totalPending}</div>
+                  <div className="ahw-stat-label">Pending Review</div>
+                </div>
+              </motion.div>
+
+              <motion.div className="ahw-stat-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+                <div className="ahw-stat-icon" style={{ background: "rgba(22,163,74,0.1)", color: "#16a34a" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <div>
+                  <div className="ahw-stat-num">{totalGraded}</div>
+                  <div className="ahw-stat-label">Graded</div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Homeworks grouped by lesson */}
+            {lessonGroups.length === 0 ? (
+              <div className="ahw-empty">
+                <p>No homeworks in this course.</p>
               </div>
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="ahw-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <p>No homeworks found</p>
-          </div>
-        ) : (
-          <div className="ahw-list">
-            {filtered.map((hw, idx) => {
-              const subs     = subsMap[hw.id] || [];
-              const students = studentsMap[hw.course_id] || [];
-              const enrolled = students.length || subs.length;
-
-              const submitted  = subs.filter(s => s.status === "submitted").length;
-              const graded     = subs.filter(s => s.status === "graded").length;
-              const drafts     = subs.filter(s => s.status === "draft").length;
-              const returned   = subs.filter(s => s.status === "returned").length;
-              const totalSubs  = subs.length;
-
-              const isExpanded = expandedId === hw.id;
-              const isLoading  = loadingExpand === hw.id;
-              const due        = hw.due_date ? new Date(hw.due_date) : null;
-              const isOverdue  = due && due < new Date();
-              const hwSubFilter = subFilter[hw.id] || "all";
-
-              // Build the student rows (merged submissions + not-submitted students)
-              let rows = [];
-              if (students.length > 0) {
-                // We have full student list
-                rows = students.map(stu => {
-                  const sub = subs.find(s => (s.student === stu.id || s.student?.id === stu.id));
-                  return sub
-                    ? { ...sub, _student: stu, _missing: false }
-                    : { _student: stu, _missing: true, id: `missing-${stu.id}`, status: "missing" };
-                });
-                // Also add submissions from students not in our group list
-                subs.forEach(sub => {
-                  const sid = sub.student?.id ?? sub.student;
-                  if (!students.find(s => s.id === sid)) rows.push({ ...sub, _student: null, _missing: false });
-                });
-              } else {
-                rows = subs.map(sub => ({ ...sub, _student: null, _missing: false }));
-              }
-
-              const visibleRows = rows.filter(r => {
-                if (hwSubFilter === "all") return true;
-                if (hwSubFilter === "missing") return r._missing;
-                if (hwSubFilter === "submitted") return r.status === "submitted";
-                if (hwSubFilter === "graded") return r.status === "graded";
-                if (hwSubFilter === "draft") return r.status === "draft";
-                return true;
-              });
-
-              return (
+            ) : (
+              lessonGroups.map((lg, li) => (
                 <motion.div
-                  key={hw.id}
-                  className={`ahw-card glass ${isExpanded ? "ahw-card-expanded" : ""}`}
-                  initial={{ opacity: 0, y: 12 }}
+                  key={lg.order}
+                  className="ahw-lesson-section"
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.04, duration: 0.35 }}
+                  transition={{ delay: li * 0.05 }}
                 >
-                  {/* Card header — clickable */}
-                  <div className="ahw-card-header" onClick={() => handleExpand(hw)}>
-                    <div className="ahw-card-left">
-                      <div className="ahw-card-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                      </div>
-                      <div className="ahw-card-info">
-                        <div className="ahw-card-title">{hw.title}</div>
-                        <div className="ahw-card-meta">
-                          {hw.course_title && <span className="ahw-tag ahw-tag-course">{hw.course_title}</span>}
-                          {hw.lesson_title && <span className="ahw-tag ahw-tag-lesson">{hw.lesson_title}</span>}
-                          {due && (
-                            <span className={`ahw-tag ${isOverdue ? "ahw-tag-overdue" : "ahw-tag-due"}`}>
-                              Due {formatDate(hw.due_date)}
-                            </span>
-                          )}
-                          <span className="ahw-tag ahw-tag-pts">{hw.total_points} pts</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="ahw-card-right">
-                      {isLoading ? (
-                        <div className="ahw-expand-spinner" />
-                      ) : subsMap[hw.id] ? (
-                        <ProgressRing submitted={totalSubs} total={enrolled} />
-                      ) : null}
-
-                      {/* Quick badges */}
-                      <div className="ahw-card-badges">
-                        {submitted > 0 && <span className="ahw-badge ahw-badge-submitted">{submitted} Submitted</span>}
-                        {graded > 0   && <span className="ahw-badge ahw-badge-graded">{graded} Graded</span>}
-                        {drafts > 0   && <span className="ahw-badge ahw-badge-draft">{drafts} Draft</span>}
-                        {students.length > 0 && rows.filter(r => r._missing).length > 0 && (
-                          <span className="ahw-badge ahw-badge-missing">
-                            {rows.filter(r => r._missing).length} Missing
-                          </span>
-                        )}
-                      </div>
-
-                      <motion.span
-                        className="ahw-chevron"
-                        animate={{ rotate: isExpanded ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </motion.span>
-                    </div>
+                  <div className="ahw-lesson-header">
+                    <span className="ahw-lesson-num-badge">Lesson {lg.order || "—"}</span>
+                    {lg.title && <span className="ahw-lesson-title-text">{lg.title}</span>}
+                    <span className="ahw-lesson-hw-pill">
+                      {lg.homeworks.length} hw
+                    </span>
                   </div>
 
-                  {/* Expanded content */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        className="ahw-expand"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                      >
-                        {isLoading ? (
-                          <div className="ahw-expand-loading">
-                            <div className="ahw-expand-spinner" />
-                            Loading submissions...
-                          </div>
-                        ) : (
-                          <>
-                            {/* Sub-filter tabs */}
-                            <div className="ahw-sub-tabs">
-                              {[
-                                { key: "all",       label: `All (${rows.length})` },
-                                { key: "submitted", label: `Submitted (${submitted})` },
-                                { key: "graded",    label: `Graded (${graded})` },
-                                { key: "draft",     label: `Draft (${drafts})` },
-                                ...(students.length > 0 ? [{ key: "missing", label: `Missing (${rows.filter(r => r._missing).length})` }] : []),
-                              ].map(t => (
-                                <button
-                                  key={t.key}
-                                  className={`ahw-sub-tab ${hwSubFilter === t.key ? "active" : ""}`}
-                                  onClick={() => setSubFilter(prev => ({ ...prev, [hw.id]: t.key }))}
-                                >
-                                  {t.label}
-                                </button>
-                              ))}
-                            </div>
-
-                            {/* Table */}
-                            {visibleRows.length === 0 ? (
-                              <div className="ahw-no-subs">No submissions in this category.</div>
-                            ) : (
-                              <div className="ahw-table-wrap">
-                                <table className="ahw-table">
-                                  <thead>
-                                    <tr>
-                                      <th>Student</th>
-                                      <th>Status</th>
-                                      <th>Score</th>
-                                      <th>Files</th>
-                                      <th>Submitted</th>
-                                      <th>Actions</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {visibleRows.map((row, ri) => {
-                                      const stu  = row._student;
-                                      const name = stu
-                                        ? `${stu.first_name} ${stu.last_name}`.trim() || stu.username
-                                        : row.student_name || `Student #${row.student}`;
-                                      const email = stu?.email || row.student_email || "";
-                                      const files = row.uploaded_files || [];
-                                      const isGrading = gradingId === row.id;
-
-                                      return (
-                                        <motion.tr
-                                          key={row.id}
-                                          initial={{ opacity: 0, x: -8 }}
-                                          animate={{ opacity: 1, x: 0 }}
-                                          transition={{ delay: ri * 0.03 }}
-                                        >
-                                          {/* Student */}
-                                          <td>
-                                            <div className="ahw-student-cell">
-                                              <Avatar profile={stu?.profile} name={name} size={34} />
-                                              <div className="ahw-student-info">
-                                                <span className="ahw-student-name">{name}</span>
-                                                {email && <span className="ahw-student-email">{email}</span>}
-                                              </div>
-                                            </div>
-                                          </td>
-
-                                          {/* Status */}
-                                          <td><StatusPill status={row.status} /></td>
-
-                                          {/* Score */}
-                                          <td>
-                                            {row._missing
-                                              ? <span className="ahw-no-score">—</span>
-                                              : <ScoreBar score={row.score} total={hw.total_points} />
-                                            }
-                                          </td>
-
-                                          {/* Files */}
-                                          <td>
-                                            {row._missing || files.length === 0
-                                              ? <span className="ahw-no-files">No files</span>
-                                              : (
-                                                <div className="ahw-files">
-                                                  {files.map(f => (
-                                                    <a
-                                                      key={f.id}
-                                                      href={f.file}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      className="ahw-file-chip"
-                                                      title={f.filename}
-                                                    >
-                                                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                                      <span className="ahw-file-name">{f.filename}</span>
-                                                      {f.file_size > 0 && <span className="ahw-file-size">{formatBytes(f.file_size)}</span>}
-                                                    </a>
-                                                  ))}
-                                                </div>
-                                              )
-                                            }
-                                          </td>
-
-                                          {/* Submitted date */}
-                                          <td className="ahw-date-cell">
-                                            {row._missing ? <span className="ahw-no-score">—</span> : formatDateTime(row.submitted_at)}
-                                          </td>
-
-                                          {/* Actions */}
-                                          <td>
-                                            {!row._missing && (
-                                              isGrading ? (
-                                                <div className="ahw-grade-form">
-                                                  <input
-                                                    type="number"
-                                                    className="ahw-grade-input"
-                                                    placeholder={`Score /${hw.total_points}`}
-                                                    min="0"
-                                                    max={hw.total_points}
-                                                    value={gradeForm.score}
-                                                    onChange={e => setGradeForm(p => ({ ...p, score: e.target.value }))}
-                                                  />
-                                                  <textarea
-                                                    className="ahw-grade-textarea"
-                                                    placeholder="Feedback (optional)"
-                                                    rows={2}
-                                                    value={gradeForm.feedback}
-                                                    onChange={e => setGradeForm(p => ({ ...p, feedback: e.target.value }))}
-                                                  />
-                                                  <div className="ahw-grade-actions">
-                                                    <motion.button
-                                                      className="ahw-btn-save"
-                                                      onClick={() => handleGrade(row.id, hw.id)}
-                                                      disabled={saving}
-                                                      whileTap={{ scale: 0.95 }}
-                                                    >
-                                                      {saving ? "Saving…" : "Save"}
-                                                    </motion.button>
-                                                    <motion.button
-                                                      className="ahw-btn-cancel"
-                                                      onClick={() => { setGradingId(null); setGradeForm({ score: "", feedback: "" }); }}
-                                                      whileTap={{ scale: 0.95 }}
-                                                    >
-                                                      Cancel
-                                                    </motion.button>
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                <motion.button
-                                                  className="ahw-btn-grade"
-                                                  onClick={() => {
-                                                    setGradingId(row.id);
-                                                    setGradeForm({
-                                                      score: row.score != null ? String(row.score) : "",
-                                                      feedback: row.feedback || "",
-                                                    });
-                                                  }}
-                                                  whileHover={{ scale: 1.03 }}
-                                                  whileTap={{ scale: 0.95 }}
-                                                >
-                                                  {row.status === "graded" ? "Re-grade" : "Grade"}
-                                                </motion.button>
-                                              )
-                                            )}
-                                          </td>
-                                        </motion.tr>
-                                      );
-                                    })}
-                                  </tbody>
-                                </table>
-                              </div>
-                            )}
-
-                            {/* Feedback summary (if any graded) */}
-                            {rows.filter(r => r.feedback).length > 0 && (
-                              <div className="ahw-feedback-summary">
-                                <div className="ahw-feedback-title">Feedback given</div>
-                                {rows.filter(r => r.feedback).map(r => {
-                                  const n = r._student
-                                    ? `${r._student.first_name} ${r._student.last_name}`.trim() || r._student.username
-                                    : r.student_name;
-                                  return (
-                                    <div key={r.id} className="ahw-feedback-row">
-                                      <span className="ahw-feedback-who">{n}</span>
-                                      <span className="ahw-feedback-text">{r.feedback}</span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <div className="ahw-list">
+                    {lg.homeworks.map((hw, hi) => renderHomeworkCard(hw, hi))}
+                  </div>
                 </motion.div>
-              );
-            })}
-          </div>
+              ))
+            )}
+          </>
         )}
+
       </div>
     </PageTransition>
   );
