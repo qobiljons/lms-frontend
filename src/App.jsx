@@ -32,6 +32,7 @@ import MessagingPage from "./pages/messaging/MessagingPage";
 import TutorPage from "./pages/tutor/TutorPage";
 import HomeworkSubmissionPage from "./pages/homework/HomeworkSubmissionPage";
 import HomeworkListPage from "./pages/homework/HomeworkListPage";
+import AdminHomeworkPage from "./pages/admin/AdminHomeworkPage";
 
 function App() {
   const location = useLocation();
@@ -239,6 +240,14 @@ function App() {
               element={
                 <RoleRoute roles={["admin"]}>
                   <UserDetailPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/homework"
+              element={
+                <RoleRoute roles={["admin", "instructor", "teacher"]}>
+                  <AdminHomeworkPage />
                 </RoleRoute>
               }
             />
